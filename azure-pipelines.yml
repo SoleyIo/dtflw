@@ -1,0 +1,68 @@
+trigger:
+- master
+
+variables:
+- group: databricks-ci-build-vars
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: 3.8.*
+    addToPath: true
+
+# Install dependencies
+
+- script: |
+    python --version
+    pip uninstall pyspark
+    pip install .
+    pip install coverage
+  displayName: 'Install dependencies'
+
+# Configure
+
+- script: |
+    echo $DATABRICKS_CONNECT_CONFIG > ~/.databricks-connect
+  env:
+    DATABRICKS_CONNECT_CONFIG: $(databricks_connect_config)
+  displayName: 'Configure databricks-connect'
+  
+# Test
+
+- script: |
+    coverage run -m unittest discover && coverage xml
+  env:
+    AZURE_STORAGE_KEY: $(azure_storage_key)
+  displayName: 'Test'
+
+# Publish test coverage
+
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: 'Cobertura'
+    summaryFileLocation: 'coverage.xml'
+    failIfCoverageEmpty: true
+
+# Package
+
+- script: |
+    python setup.py sdist bdist_wheel
+    cp CHANGES.md dist/
+    cp README.md dist/
+    ls dist
+  displayName: 'Package to a *.whl'
+
+# Publish
+- task: CopyFiles@2
+  inputs:
+    contents: 'dist/**'
+    targetFolder: $(Build.ArtifactStagingDirectory)
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'dtflwBuildOutputs'
+    publishLocation: 'Container'
