@@ -51,6 +51,18 @@ def get_notebook_abs_path(rel_path):
     return '/'.join([get_this_notebook_abs_cwd(), rel_path])
 
 
+def get_path_relative_to_project_dir(rel_path: str) -> str:
+    """
+    Returns a path starting with a project's directory for a given relative path.
+
+    Example:
+
+    If 'rel_path' is "dir/notebook" and the function is called from '/Repos/user@a.b/project/main'
+    then 'project/dir/notebook' is returned.
+    """
+    return "/".join(get_notebook_abs_path(rel_path).split("/")[3:])
+
+
 def try_get_context_tag(key, defaut=None):
     """
     Tries to get a value from `dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags()`
