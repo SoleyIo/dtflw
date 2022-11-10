@@ -34,13 +34,8 @@ steps:
     new_changesmd_hash=$(sha1sum ./CHANGES.md)
     echo new_changesmd_hash $new_changesmd_hash
 
-    echo "-------"
-    ls
-    echo "-------"
-    git branch
-    echo "-------"
-
-    git checkout main
+    git checkout origin/main -- setup.py
+    git checkout origin/main -- CHANGES.md
     
     old_version=$(python setup.py --version)
     echo old_version $old_version
@@ -50,7 +45,7 @@ steps:
     git checkout -
     
     if [[ "$new_version" == "$old_version" || "$new_changesmd_hash" == "$old_changesmd_hash" ]]; then
-        echo Build error! Version in setup.py and/or CHANGES.md has not been updated. Please, update the version and/or CHANGES.md.
+        echo Build error! Version in setup.py and/or CHANGES.md has not been updated. Please, update the version and/or log changes.
         exit 1
     fi
   displayName: 'Package version check'
