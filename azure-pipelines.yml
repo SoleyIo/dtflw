@@ -37,7 +37,7 @@ steps:
     echo "-------"
     ls
     echo "-------"
-    git branche
+    git branch
     echo "-------"
 
     git checkout main
