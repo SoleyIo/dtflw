@@ -13,6 +13,8 @@ steps:
     versionSpec: 3.8.*
     addToPath: true
 
+- checkout: self
+
 # Version check
 
 - script: |
@@ -25,8 +27,6 @@ steps:
     new_changesmd_hash=$(sha1sum ./CHANGES.md)
     echo new_changesmd_hash $new_changesmd_hash
 
-    echo "---------------------------------"
-    git remote show origin
     echo "---------------------------------"
     git branch
     echo "---------------------------------"
