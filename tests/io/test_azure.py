@@ -5,6 +5,13 @@ from dtflw.io.azure import AzureStorage
 from collections import namedtuple
 import os
 
+# This test case requires an Azure blob container. 
+# Set next env variables to run it:
+
+# AZURE_STORAGE_ACCOUNT_NAME
+# AZURE_STORAGE_CONTAINER_NAME
+# AZURE_STORAGE_TEST_DIR
+# AZURE_STORAGE_KEY
 
 @ddt
 class AzureStorageTestCase(SparkTestCase):

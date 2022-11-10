@@ -1,5 +1,5 @@
 trigger:
-- master
+- main
 
 variables:
 - group: databricks-ci-build-vars
@@ -12,6 +12,10 @@ steps:
   inputs:
     versionSpec: 3.8.*
     addToPath: true
+
+# Version check
+# TODO: check if version in setup.py and CHANGES.md have been updated.
+
 
 # Install dependencies
 

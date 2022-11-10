@@ -1,8 +1,10 @@
 # Changelog
 *All notable changes to this package are documented in this file.*
 
+## [0.0.2] - 09.11.2022
+- Added a new function `dtflw.databricks.get_path_relative_to_project_dir`.
+
 ## [0.0.1] - 07.11.2022
-### Changes
 - Initialized the `dtflw` repo. 
 - Added `dtflw.io`. 
 - Set up unittest and a build definition.
