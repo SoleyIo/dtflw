@@ -34,8 +34,14 @@ steps:
     new_changesmd_hash=$(sha1sum ./CHANGES.md)
     echo new_changesmd_hash $new_changesmd_hash
 
-    git checkout origin/main -- setup.py
-    git checkout origin/main -- CHANGES.md
+    echo "---------------------------------"
+    git fetch
+    echo "---------------------------------"
+    git branch
+    echo "---------------------------------"
+
+    git checkout main -- setup.py
+    git checkout main -- CHANGES.md
     
     old_version=$(python setup.py --version)
     echo old_version $old_version
