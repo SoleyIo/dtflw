@@ -13,15 +13,6 @@ steps:
     versionSpec: 3.8.*
     addToPath: true
 
-# Install dependencies
-
-- script: |
-    python --version
-    pip uninstall pyspark
-    pip install .
-    pip install coverage
-  displayName: 'Install dependencies'
-
 # Version check
 
 - script: |
@@ -35,7 +26,7 @@ steps:
     echo new_changesmd_hash $new_changesmd_hash
 
     echo "---------------------------------"
-    git fetch
+    git remote show origin
     echo "---------------------------------"
     git branch
     echo "---------------------------------"
@@ -55,6 +46,15 @@ steps:
         exit 1
     fi
   displayName: 'Package version check'
+
+# Install dependencies
+
+- script: |
+    python --version
+    pip uninstall pyspark
+    pip install .
+    pip install coverage
+  displayName: 'Install dependencies'
 
 # Configure
 
