@@ -1,6 +1,9 @@
 # Changelog
 *All notable changes to this package are documented in this file.*
 
+## [0.0.3] - 18.11.2022
+- Added info to `setup.py`.
+
 ## [0.0.2] - 09.11.2022
 - Added a new function `dtflw.databricks.get_path_relative_to_project_dir`.
 
