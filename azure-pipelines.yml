@@ -53,6 +53,7 @@ steps:
 # Package
 
 - script: |
+    pip install wheel
     python setup.py sdist bdist_wheel
     cp CHANGES.md dist/
     cp README.md dist/
