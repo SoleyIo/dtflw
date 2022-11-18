@@ -16,7 +16,7 @@ setup(
     ],
     install_requires=[
         "ddt>=1.5.0",
-        "databricks-connect>=9.1.20",
+        "databricks-connect==9.1.*",
         "setuptools>=65.0.0"
     ],
 )
