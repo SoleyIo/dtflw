@@ -1,4 +1,3 @@
-
 class FlowEvents:
     """
     Events fired by a Flow instance.

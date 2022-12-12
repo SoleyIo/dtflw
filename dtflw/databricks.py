@@ -30,21 +30,21 @@ def get_current_username() -> str:
     return dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags().apply('user')
 
 
-def get_this_notebook_abs_path():
+def get_this_notebook_abs_path() -> str:
     """
     Returns an absolute path of the current notebook in the workspace.
     """
     return get_dbutils().notebook().entry_point.getDbutils().notebook().getContext().notebookPath().get()
 
 
-def get_this_notebook_abs_cwd():
+def get_this_notebook_abs_cwd() -> str:
     """
     Returns an absolute path to a folder of the current notebook in the workspace.
     """
     return '/'.join(get_this_notebook_abs_path().split('/')[:-1])
 
 
-def get_notebook_abs_path(rel_path):
+def get_notebook_abs_path(rel_path) -> str:
     """
     Returns an absolute path to a notebook based on its relative path.
     """
