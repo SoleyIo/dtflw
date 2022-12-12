@@ -1,6 +1,9 @@
 # Changelog
 *All notable changes to this package are documented in this file.*
 
+## [0.0.4] - 06.12.2022
+- Removed version restriction on `setuptools`.
+
 ## [0.0.3] - 18.11.2022
 - Added info to `setup.py`.
 
