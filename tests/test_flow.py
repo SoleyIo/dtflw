@@ -1,11 +1,10 @@
 from unittest.mock import patch
-from soley.utils.testing.spark import StorageTestCase
-from soley.utils.notebook.flow20.flow import init_flow
+import unittest
 from ddt import ddt, data, unpack
 
 
 @ddt
-class FlowTestCase(StorageTestCase):
+class FlowTestCase(unittest.TestCase):
 
     @data(
         ("material", "nb_01/material.parquet"),

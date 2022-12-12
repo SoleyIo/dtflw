@@ -1,20 +1,19 @@
 import re
 from unittest.mock import patch
 import pyspark
-from soley.utils.notebook.flow20.events import EventHandlerBase, FlowEvents
-from soley.utils.notebook.flow20.flow import Flow
-from soley.utils.notebook.flow20.logger import DefaultLogger
-from soley.utils.notebook.flow20.plugins.notebook_args import EvalNotebookArgsEventHandler, EvalNotebookArgsPlugin
-from soley.utils.testing.spark import StorageTestCase
+from dtflw.events import EventHandlerBase, FlowEvents
+from dtflw.flow import Flow
+from dtflw.logger import DefaultLogger
 from ddt import ddt, data, unpack
-from soley.utils.io.storage import file_exists
-from soley.utils.notebook.flow20.lazy_notebook import LazyNotebook
-from soley.utils.notebook.flow20.flow_context import FlowContext
 import dtflw.databricks
+from dtflw.lazy_notebook import LazyNotebook
+from dtflw.flow_context import FlowContext
+import dtflw.databricks
+import unittest
 
 
 @ddt
-class LazyNotebookTestCase(StorageTestCase):
+class LazyNotebookTestCase(unittest.TestCase):
 
     def setUp(self):
         self._clean_files = []

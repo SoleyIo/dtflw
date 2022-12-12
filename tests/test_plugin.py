@@ -1,10 +1,10 @@
-from soley.utils.notebook.flow20.flow import Flow, FlowContext, LazyNotebook
-from unittest import TestCase
-from soley.utils.notebook.flow20.logger import DefaultLogger
-from soley.utils.notebook.flow20.plugin import FlowPluginBase, NotebookPluginBase
+from dtflw.flow import Flow, FlowContext, LazyNotebook
+import unittest
+from dtflw.logger import DefaultLogger
+from dtflw.plugin import FlowPluginBase, NotebookPluginBase
 
 
-class PluginTestCase(TestCase):
+class PluginTestCase(unittest.TestCase):
 
     class TestFlowPlugin(FlowPluginBase):
 
@@ -38,11 +38,11 @@ class PluginTestCase(TestCase):
 
         plg = self.TestFlowPlugin()
         expected = plg.act(flow, "Alice")
-        
+
         # Act
         flow.install(plg)
         actual = flow.do_new_stuff("Alice")
-        
+
         # Assert
         self.assertEqual(expected, actual)
 
@@ -63,7 +63,7 @@ class PluginTestCase(TestCase):
 
         plg = self.TestNotebookPlugin()
         expected = "hey there!"
-        
+
         # Act
         flow.install(plg)
 
@@ -82,9 +82,9 @@ class PluginTestCase(TestCase):
         flow = Flow(ctx)
 
         plg = self.TestNotebookPlugin()
-        
+
         flow.install(plg)
-        
+
         # Act/Assert
         with self.assertRaises(ValueError):
             flow.install(plg)
