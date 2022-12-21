@@ -1,6 +1,9 @@
 # Changelog
 *All notable changes to this package are documented in this file.*
 
+## [0.0.5] - 21.12.2022
+- Added `assertions`, `databricks`, `events`, `logger`, `runtime`, `tables_repo`.
+
 ## [0.0.4] - 06.12.2022
 - Removed version restriction on `setuptools`.
 
