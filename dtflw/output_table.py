@@ -1,5 +1,5 @@
 from dtflw.flow_context import FlowContext
-import dtflw.asserts as A
+import dtflw.assertions as A
 
 
 class OutputTable():
