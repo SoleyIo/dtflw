@@ -154,9 +154,9 @@ class FileStorageBase(ABC):
         This method does not support path patterns. See `list` method for that.
         """
         if self.is_abs_path(path):
-            return file_exists(path)
+            return file_exists(path, self.__dbutils)
 
-        return file_exists(self.get_abs_path(path))
+        return file_exists(self.get_abs_path(path), self.__dbutils)
 
     def get_path_with_file_extension(self, file_path):
         """
