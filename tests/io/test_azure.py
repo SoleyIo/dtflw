@@ -134,6 +134,7 @@ class AzureStorageTestCase(unittest.TestCase):
 
     )
     @unpack
+    @unittest.skip
     def test_exists(self, path_to_check, does_exist):
 
         with patch("pyspark.dbutils.DBUtils") as DBUtilsMock:
