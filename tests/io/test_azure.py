@@ -134,23 +134,22 @@ class AzureStorageTestCase(unittest.TestCase):
 
     )
     @unpack
-    @unittest.skip
     def test_exists(self, path_to_check, does_exist):
 
-        with patch("pyspark.dbutils.DBUtils") as DBUtilsMock:
+        def dbutils_fs_ls(path):
+            if not does_exist:
+                # Mimic the behaviour if the path does not exist.
+                raise Exception("java.io.FileNotFoundException")
 
-            dbutils_mock = DBUtilsMock.return_value
+        class MockObj: pass
+        dbutils_mock = MockObj()
+        dbutils_mock.fs = MockObj()
+        dbutils_mock.fs.ls = dbutils_fs_ls
 
-            def dbutils_fs_ls(path):
-                if not does_exist:
-                    # Mimic the behaviour if the path does not exist.
-                    raise Exception("java.io.FileNotFoundException")
+        storage = AzureStorage(
+            "account", "container", "", None, dbutils_mock)
 
-            dbutils_mock.fs.ls.side_effect = dbutils_fs_ls
-            storage = AzureStorage(
-                "account", "container", "", None, dbutils_mock)
-
-            self.assertEqual(does_exist, storage.exists(path_to_check))
+        self.assertEqual(does_exist, storage.exists(path_to_check))
 
     @data(
         ("", "", False),
