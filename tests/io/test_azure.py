@@ -166,35 +166,6 @@ class AzureStorageTestCase(unittest.TestCase):
         # Act/Assert
         self.assertEqual(storage.is_abs_path(path), is_abs)
 
-    # @data(
-    #     ("", "material", True),
-    #     ("", "bom", False),
-    #     ("root_dir", "material", True),
-    #     ("root_dir/sub_dir", "material", True)
-    # )
-    # @unpack
-    # def test_read_table(self, root_dir, table_name, exists):
-    #     # Arrange
-    #     storage = AzureStorage(
-    #         self.account, self.container, f"{self.test_dir}/{root_dir}",
-    #         self.spark, self.dbutils
-    #     )
-
-    #     expected_df = self.spark.createDataFrame(
-    #         [(1, "hello")], ["id", "name"])
-
-    #     file_path = storage.get_abs_path(
-    #         storage.get_path_with_file_extension(table_name)
-    #     )
-
-    #     expected_df.write.mode("overwrite").parquet(file_path)
-
-    #     # Act
-    #     act_df = storage.read_table(file_path)
-
-    #     # Assert
-    #     self.assert_dataframes_same(act_df, expected_df)
-
     def test_read_table(self):
 
         with patch("pyspark.sql.session.SparkSession") as SparkMock:

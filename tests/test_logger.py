@@ -1,10 +1,10 @@
-from unittest import TestCase
+import unittest
 from dtflw.logger import DefaultLogger
 import sys
 from io import StringIO
 
 
-class DefaultLoggerTestCase(TestCase):
+class DefaultLoggerTestCase(unittest.TestCase):
 
     def test_default_logger_log(self):
 

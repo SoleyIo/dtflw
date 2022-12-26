@@ -1,6 +1,9 @@
 # Changelog
 *All notable changes to this package are documented in this file.*
 
+## [0.0.6] - 26.12.2022
+- Refactored the unit tests to remove a need to run a cluster and to rely on an Azure blob container.
+
 ## [0.0.5] - 21.12.2022
 - Added `assertions`, `databricks`, `events`, `logger`, `runtime`, `tables_repo`.
 
