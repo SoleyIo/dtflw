@@ -1,53 +1,12 @@
+import unittest
+from unittest.mock import MagicMock, patch
 from ddt import ddt, data, unpack
-from datetime import datetime
-from dtflw.testing.spark import SparkTestCase
 from dtflw.io.azure import AzureStorage
 from collections import namedtuple
-import os
 
-# This test case requires an Azure blob container. 
-# Set next env variables to run it:
-
-# AZURE_STORAGE_ACCOUNT_NAME
-# AZURE_STORAGE_CONTAINER_NAME
-# AZURE_STORAGE_TEST_DIR
-# AZURE_STORAGE_KEY
 
 @ddt
-class AzureStorageTestCase(SparkTestCase):
-
-    def setUp(self):
-        super().setUp()
-
-        self.account = os.getenv("AZURE_STORAGE_ACCOUNT_NAME", default=None)
-        if self.account is None:
-            raise ValueError(
-                "Could not find AZURE_STORAGE_ACCOUNT_NAME env var.")
-
-        self.container = os.getenv(
-            "AZURE_STORAGE_CONTAINER_NAME", default=None)
-        if self.container is None:
-            raise ValueError(
-                "Could not find AZURE_STORAGE_CONTAINER_NAME env var.")
-
-        self.test_dir = os.getenv("AZURE_STORAGE_TEST_DIR", default=None)
-        if self.test_dir is None:
-            raise ValueError("Could not find AZURE_STORAGE_TEST_DIR env var.")
-
-        key = os.getenv("AZURE_STORAGE_KEY", default=None)
-        if key is None:
-            raise ValueError("Could not find AZURE_STORAGE_KEY env var.")
-
-        self.spark.conf.set(
-            f"fs.azure.account.key.{self.account}.blob.core.windows.net", key)
-
-    def tearDown(self):
-        self.dbutils.fs.rm(
-            f"wasbs://{self.container}@{self.account}.blob.core.windows.net/{self.test_dir}",
-            recurse=True
-        )
-
-        super().tearDown()
+class AzureStorageTestCase(unittest.TestCase):
 
     @data(
         ("", "", ""),
@@ -57,28 +16,12 @@ class AzureStorageTestCase(SparkTestCase):
         ("root/dir", "foo/bar/", "root/dir/foo/bar/")
     )
     @unpack
-    def test_get_path_in_root_dir(self,  root_dir, rel_path, expected_abs_path):
+    def test_get_path_in_root_dir(self, root_dir, rel_path, expected_abs_path):
 
-        storage = AzureStorage("acc", "con", root_dir,
-                               self.spark, self.dbutils)
+        storage = AzureStorage("account", "container", root_dir, None, None)
 
         actual_abs_path = storage.get_path_in_root_dir(rel_path)
         self.assertEqual(expected_abs_path, actual_abs_path)
-
-    def test_get_path_with_file_extension(self):
-
-        storage = AzureStorage(self.account, self.container,
-                               "", self.spark, self.dbutils)
-
-        self.assertEqual(
-            storage.get_path_with_file_extension("file"), "file.parquet"
-        )
-
-        self.assertEqual(
-            storage.get_path_with_file_extension(
-                "root/file"),
-            "root/file.parquet"
-        )
 
     @data(
         "",
@@ -87,11 +30,8 @@ class AzureStorageTestCase(SparkTestCase):
     )
     def test_root_dir(self, root_dir):
 
-        storage = AzureStorage("acc", "con", root_dir,
-                               self.spark, self.dbutils)
-
-        actual_root_dir = storage.root_dir
-        self.assertEqual(root_dir, actual_root_dir)
+        storage = AzureStorage("acc", "con", root_dir, None, None)
+        self.assertEqual(root_dir, storage.root_dir)
 
     @data(
         # * - matches everything
@@ -112,7 +52,7 @@ class AzureStorageTestCase(SparkTestCase):
         Spark reader uses a pattern syntax different from [fmatch](https://docs.python.org/3/library/fnmatch.html).
         Which is also used by [glob](https://docs.python.org/3/library/glob.html).
 
-        `AzureStorage.list` supports only a subset of it. 
+        `AzureStorage.list` supports only a subset of it.
         It supports:
         - Asterisk: *
         - Question mark: ?
@@ -128,7 +68,7 @@ class AzureStorageTestCase(SparkTestCase):
         """
 
         # Arrange
-        storage = AzureStorage("acc", "con", "", self.spark, self.dbutils)
+        storage = AzureStorage("account", "container", "", None, None)
 
         fs = {
             storage.base_path: [
@@ -173,11 +113,10 @@ class AzureStorageTestCase(SparkTestCase):
     @unpack
     def test_get_abs_path(self, rel_path, root_dir):
         # Arrange
-        acc_name = "acc"
-        con_name = "con"
+        acc_name = "account"
+        con_name = "container"
 
-        storage = AzureStorage(
-            acc_name, con_name, root_dir, self.spark, self.dbutils)
+        storage = AzureStorage(acc_name, con_name, root_dir, None, None)
 
         expected_path = f"wasbs://{con_name}@{acc_name}.blob.core.windows.net/{rel_path}"
 
@@ -187,27 +126,30 @@ class AzureStorageTestCase(SparkTestCase):
         # Assert
         self.assertEqual(actual_path, expected_path)
 
-    def test_exists_if_true(self):
-        # Arrange
-        df = self.spark.createDataFrame([("this is test",)], ["msg"])
+    @data(
+        ("file.txt", True),
+        ("file.txt", False),
+        ("wasbs://container@account.blob.core.windows.net/file.txt", True),
+        ("wasbs://container@account.blob.core.windows.net/file.txt", False)
 
-        storage = AzureStorage(self.account, self.container,
-                               "", self.spark, self.dbutils)
+    )
+    @unpack
+    def test_exists(self, path_to_check, does_exist):
 
-        rel_file_path = f"{self.test_dir}/{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.txt"
-        df.write.text(storage.get_abs_path(rel_file_path))
+        def dbutils_fs_ls(path):
+            if not does_exist:
+                # Mimic the behaviour if the path does not exist.
+                raise Exception("java.io.FileNotFoundException")
 
-        # Act/Assert
-        self.assertTrue(storage.exists(rel_file_path))
+        class MockObj: pass
+        dbutils_mock = MockObj()
+        dbutils_mock.fs = MockObj()
+        dbutils_mock.fs.ls = dbutils_fs_ls
 
-    def test_exists_if_false(self):
-        # Arrange
-        storage = AzureStorage(self.account, self.container,
-                               "", self.spark, self.dbutils)
-        rel_file_path = f"{self.test_dir}/{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.txt"
+        storage = AzureStorage(
+            "account", "container", "", None, dbutils_mock)
 
-        # Act/Assert
-        self.assertFalse(storage.exists(rel_file_path))
+        self.assertEqual(does_exist, storage.exists(path_to_check))
 
     @data(
         ("", "", False),
@@ -219,61 +161,53 @@ class AzureStorageTestCase(SparkTestCase):
     @unpack
     def test_is_abs_path(self, path, root_dir, is_abs):
         # Arrange
-        storage = AzureStorage("acc", "con", root_dir,
-                               self.spark, self.dbutils)
+        storage = AzureStorage("acc", "con", root_dir, None, None)
 
         # Act/Assert
         self.assertEqual(storage.is_abs_path(path), is_abs)
 
-    def test_get_path_with_file_extension(self):
+    def test_read_table(self):
 
-        storage = AzureStorage(self.account,
-                               self.account, "", self.spark, self.dbutils)
+        with patch("pyspark.sql.session.SparkSession") as SparkMock:
 
-        self.assertEqual(
-            storage.get_path_with_file_extension("file"),
-            "file.parquet"
-        )
+            spark_mock = SparkMock.return_value()
 
-        self.assertEqual(
-            storage.get_path_with_file_extension("root/file"),
-            "root/file.parquet"
-        )
+            def spark_read_parquet(path):
+                # Mock the real behavior.
+                return True
 
-    @data(
-        ("", "material", True),
-        ("", "bom", False),
-        ("root_dir", "material", True),
-        ("root_dir/sub_dir", "material", True)
-    )
-    @unpack
-    def test_read_table(self, root_dir, table_name, exists):
-        # Arrange
-        storage = AzureStorage(
-            self.account, self.container, f"{self.test_dir}/{root_dir}",
-            self.spark, self.dbutils
-        )
+            spark_mock.read.parquet = spark_read_parquet
 
-        expected_df = self.spark.createDataFrame(
-            [(1, "hello")], ["id", "name"])
+            storage = AzureStorage(
+                "account", "container", "root_dir", spark_mock, None)
 
-        file_path = storage.get_abs_path(
-            storage.get_path_with_file_extension(table_name)
-        )
+            file_path = storage.get_abs_path(
+                storage.get_path_with_file_extension("table")
+            )
 
-        expected_df.write.mode("overwrite").parquet(file_path)
-
-        # Act
-        act_df = storage.read_table(file_path)
-
-        # Assert
-        self.assert_dataframes_same(act_df, expected_df)
+            actual_df = storage.read_table(file_path)
+            self.assertTrue(actual_df)
 
     def test_base_path(self):
 
-        storage = AzureStorage(self.account, self.container, "root_dir", self.spark, self.dbutils)
+        storage = AzureStorage("account", "container", "root_dir", None, None)
 
         self.assertEqual(
             storage.base_path,
-            f"wasbs://{self.container}@{self.account}.blob.core.windows.net"
+            "wasbs://container@account.blob.core.windows.net"
+        )
+
+    @data(
+        ("file", "file.parquet"),
+        ("root/file", "root/file.parquet"),
+        ("wasbs://container@account.blob.core.windows.net/foo/bar",
+         "wasbs://container@account.blob.core.windows.net/foo/bar.parquet")
+    )
+    @unpack
+    def test_get_path_with_file_extension(self, base, expected):
+
+        storage = AzureStorage("account", "container", "", None, None)
+
+        self.assertEqual(
+            storage.get_path_with_file_extension(base), expected
         )
