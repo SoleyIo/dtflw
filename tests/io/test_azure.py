@@ -141,6 +141,7 @@ class AzureStorageTestCase(unittest.TestCase):
                 # Mimic the behaviour if the path does not exist.
                 raise Exception("java.io.FileNotFoundException")
 
+        # Custom mock, since pyspark.dbutils.DBUtils is not available here.
         class MockObj: pass
         dbutils_mock = MockObj()
         dbutils_mock.fs = MockObj()
