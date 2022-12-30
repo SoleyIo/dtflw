@@ -5,47 +5,19 @@ from dtflw.io.azure import AzureStorage
 from dtflw.logger import DefaultLogger
 from dtflw.flow_context import FlowContext
 from dtflw.output_table import OutputTable
+import tests.utils as utils
 
 
 @ddt
 class OutputTableTestCase(unittest.TestCase):
-
-    def __mock_dbutils(self, fs_ls_raises_error=False):
-        # Custom mock, since pyspark.dbutils.DBUtils is not available.
-
-        def dbutils_fs_ls(path):
-            if fs_ls_raises_error:
-                raise Exception("java.io.FileNotFoundException")
-
-        class MockObj:
-            pass
-        dbutils_mock = MockObj()
-        dbutils_mock.fs = MockObj()
-        dbutils_mock.fs.ls = dbutils_fs_ls
-
-        return dbutils_mock
-
-    def __mock_spark(self, spark_class_mock):
-        spark_mock = spark_class_mock.return_value()
-
-        def spark_read_parquet(path, df_dtypes=[("id", "bigint")]):
-            # Mock the real behavior.
-
-            with patch("pyspark.sql.dataframe.DataFrame") as DataFrameMock:
-                df_mock = DataFrameMock.return_value()
-                df_mock.dtypes = df_dtypes
-                return df_mock
-
-        spark_mock.read.parquet = spark_read_parquet
-        return spark_mock
 
     @patch("pyspark.sql.session.SparkSession")
     def test_validate_succeeds(self, spark_class_mock):
 
         # Arrange
 
-        dbutils_mock = self.__mock_dbutils()
-        spark_mock = self.__mock_spark(spark_class_mock)
+        dbutils_mock = utils.mock_dbutils()
+        spark_mock = utils.mock_spark(spark_class_mock)
 
         o = OutputTable(
             name="foo",
@@ -70,8 +42,8 @@ class OutputTableTestCase(unittest.TestCase):
 
         # Arrange
 
-        dbutils_mock = self.__mock_dbutils(fs_ls_raises_error=True)
-        spark_mock = self.__mock_spark(spark_class_mock)
+        dbutils_mock = utils.mock_dbutils(fs_ls_raises_error=True)
+        spark_mock = utils.mock_spark(spark_class_mock)
 
         o = OutputTable(
             name="foo",
@@ -96,8 +68,8 @@ class OutputTableTestCase(unittest.TestCase):
 
         # Arrange
 
-        dbutils_mock = self.__mock_dbutils(fs_ls_raises_error=False)
-        spark_mock = self.__mock_spark(spark_class_mock)
+        dbutils_mock = utils.mock_dbutils(fs_ls_raises_error=False)
+        spark_mock = utils.mock_spark(spark_class_mock)
 
         o = OutputTable(
             name="foo",
@@ -123,7 +95,7 @@ class OutputTableTestCase(unittest.TestCase):
 
         # Arrange
 
-        dbutils_mock = self.__mock_dbutils(
+        dbutils_mock = utils.mock_dbutils(
             fs_ls_raises_error=expected_needs_eval)
 
         o = OutputTable(
