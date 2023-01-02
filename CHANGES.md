@@ -1,6 +1,9 @@
 # Changelog
 *All notable changes to this package are documented in this file.*
 
+## [0.0.7] - 02.01.2023
+- Added `flow`, `plugin`, `flow_context`, `input_table`, `output_table`, `lazy_notebook`.
+
 ## [0.0.6] - 26.12.2022
 - Refactored the unit tests to remove a need to run a cluster and to rely on an Azure blob container.
 

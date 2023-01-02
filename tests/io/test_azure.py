@@ -1,8 +1,9 @@
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 from ddt import ddt, data, unpack
 from dtflw.io.azure import AzureStorage
 from collections import namedtuple
+import tests.utils as utils
 
 
 @ddt
@@ -136,15 +137,7 @@ class AzureStorageTestCase(unittest.TestCase):
     @unpack
     def test_exists(self, path_to_check, does_exist):
 
-        def dbutils_fs_ls(path):
-            if not does_exist:
-                # Mimic the behaviour if the path does not exist.
-                raise Exception("java.io.FileNotFoundException")
-
-        class MockObj: pass
-        dbutils_mock = MockObj()
-        dbutils_mock.fs = MockObj()
-        dbutils_mock.fs.ls = dbutils_fs_ls
+        dbutils_mock = utils.mock_dbutils(fs_ls_raises_error=not does_exist)
 
         storage = AzureStorage(
             "account", "container", "", None, dbutils_mock)
@@ -168,15 +161,9 @@ class AzureStorageTestCase(unittest.TestCase):
 
     def test_read_table(self):
 
-        with patch("pyspark.sql.session.SparkSession") as SparkMock:
+        with patch("pyspark.sql.session.SparkSession") as spark_class_mock:
 
-            spark_mock = SparkMock.return_value()
-
-            def spark_read_parquet(path):
-                # Mock the real behavior.
-                return True
-
-            spark_mock.read.parquet = spark_read_parquet
+            spark_mock = utils.mock_spark(spark_class_mock)
 
             storage = AzureStorage(
                 "account", "container", "root_dir", spark_mock, None)
