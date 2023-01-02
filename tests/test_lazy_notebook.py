@@ -208,131 +208,37 @@ class LazyNotebookTestCase(unittest.TestCase):
         with self.assertRaisesRegex(Exception, "Expected output not found."):
             nb.run(is_lazy=False)
 
-    @data(
-        (True, False),
-        (True, True),
-        (False, False),
-        (False, True),
-    )
-    @unpack
     @patch("dtflw.databricks.get_this_notebook_abs_path")
-    def test_run_success(self, is_nb_lazy, output_needs_eval, get_this_notebook_abs_path_mock):
+    @patch("dtflw.lazy_notebook.LazyNotebook._LazyNotebook__run_notebook")
+    def test_run_return_value(self, run_actually_mock: MagicMock, get_this_notebook_abs_path_mock):
         """
-        Lazy bahavior:
-
-        Flow skips running a notebook
-            if is_lazy is True and no outputs need to be evaluated.
-
-        Flow runs a notebook
-            if at least one output needs evaluation or is_lazy is False.
+        Raises an exeption if an expected output table was not found
+        after a run.
         """
+
         # Arrange
+        get_this_notebook_abs_path_mock.return_value = "/Repos/a@b.c/project/main"
+        run_actually_mock.return_value = "foo"
 
-        # Unpublished required input
-        unpublished_in_abs_path = self.storage.get_abs_path(
-            "nb_01/unpublished.parquet")
-        self._df.write.mode("overwrite").parquet(unpublished_in_abs_path)
-        self._clean_files.append(unpublished_in_abs_path)
+        nb = LazyNotebook("nb", self._ctx)
 
-        # Publish a required input
-        material_in_abs_path = self.storage.get_abs_path(
-            "nb_01/material.parquet")
-        self._df.write.mode("overwrite").parquet(material_in_abs_path)
-        self._clean_files.append(material_in_abs_path)
+        # Act/Assert
+        self.assertEqual(nb.run(is_lazy=False), "foo")
 
-        self.ctx.publish_tables(
-            {"material_aliased": material_in_abs_path}, "nb_01")
-
-        # Prepare output
-        nb_path = "nb_02"
-        nb_timeout = 10
-        nb_args = {"arg": "value"}
-
-        product_out_abs_path = self.storage.get_abs_path(
-            f"project/{nb_path}/product.parquet")
-
-        if not output_needs_eval:
-            self._df.write.parquet(product_out_abs_path)
-            self._clean_files.append(product_out_abs_path)
-
-        expected_result = None if is_nb_lazy and not output_needs_eval else "Success"
-
-        def mimic_notebook_run(act_nb_path, act_timeout, act_args, ctx):
-            # If it is a "skip run" case then not suppose to call this one.
-            self.assertFalse(is_nb_lazy == True and output_needs_eval == False)
-
-            self.assertEqual(act_nb_path, nb_path)
-            self.assertEqual(act_timeout, nb_timeout)
-
-            exp_args = {
-                **nb_args,
-                **{
-                    f"material{LazyNotebook.INPUT_TABLE_SUFFIX}": material_in_abs_path,
-                    f"unpublished{LazyNotebook.INPUT_TABLE_SUFFIX}": self.storage.get_abs_path("nb_01/unpub*.parquet")
-                },
-                **{f"product{LazyNotebook.OUTPUT_TABLE_SUFFIX}": product_out_abs_path}
-            }
-            self.assertEqual(act_args, exp_args)
-
-            # Write "product" as an expected output
-            self._df.write.mode("overwrite").parquet(product_out_abs_path)
-            self._clean_files.append(product_out_abs_path)
-
-            return expected_result
-
-        # Override
-        with patch("soley.utils.notebook.flow20.lazy_notebook.LazyNotebook._LazyNotebook__run_notebook", wraps=mimic_notebook_run) as run_notebook_mock:
-
-            get_this_notebook_abs_path_mock.return_value = self.child_nb_abs_path
-
-            flow = Flow(self.ctx)
-            flow.subscribe(FlowEvents.NOTEBOOK_RUN_REQUESTED,
-                           EvalNotebookArgsEventHandler())
-
-            # Act
-            actual_result = (
-                flow.notebook(nb_path)
-                    .args(nb_args)
-                    .timeout(nb_timeout)
-                    .input("material", source_table="material_aliased")
-                    .input("unpublished", self.storage.get_abs_path("nb_01/unpub*.parquet"))
-                    .output("product", cols=self._df.dtypes, alias="product_aliased")
-                    .run(is_lazy=is_nb_lazy)
-            )
-
-            # Assert
-            self.assertEqual(actual_result, expected_result)
-
-            act_file_path = self.ctx.resolve_table("product_aliased", "nb_03")
-            self.assertTrue(file_exists(act_file_path))
-
-            # Test args temp view
-            actual_eval_args_df = dtflw.databricks.get_spark_session().table(
-                self.child_nb_args_temp_view_name)
-
-            self.assert_dataframes_same(
-                actual_eval_args_df,
-                dtflw.databricks.get_spark_session().createDataFrame(
-                    [
-                        ("arg", "value", ""),
-                        ("material", material_in_abs_path,
-                         LazyNotebook.INPUT_TABLE_SUFFIX),
-                        ("unpublished", self.storage.get_abs_path(
-                            "nb_01/unpub*.parquet"), LazyNotebook.INPUT_TABLE_SUFFIX),
-                        ("product", product_out_abs_path,
-                         LazyNotebook.OUTPUT_TABLE_SUFFIX)
-                    ],
-                    ["name", "value", "suffix"]))
+    def test_collect_args(self):
+        #TODO: implement
+        raise NotImplementedError()
 
    # Events tests
 
+    @data(False, True)
     @patch("dtflw.databricks.get_this_notebook_abs_path")
-    @patch("soley.utils.notebook.flow20.lazy_notebook.LazyNotebook._LazyNotebook__run_notebook")
-    def test_notebook_run_requested_event(self, run_notebook_mock, get_this_notebook_abs_path_mock):
+    @patch("dtflw.lazy_notebook.LazyNotebook._LazyNotebook__run_notebook")
+    def test_notebook_run_requested_event(self, is_lazy, run_notebook_mock, get_this_notebook_abs_path_mock):
 
         # Arrange
-        get_this_notebook_abs_path_mock.return_value = self.child_nb_abs_path
-        run_notebook_mock.return_value = 42
+        get_this_notebook_abs_path_mock.return_value = "/Repos/a@b.c/project/nb"
+        run_notebook_mock.return_value = "foo"
 
         class TestHandler(EventHandlerBase):
             def __init__(self):
@@ -344,12 +250,12 @@ class LazyNotebookTestCase(unittest.TestCase):
                 self.counter += 1
 
         h = TestHandler()
-        self.ctx.events.subscribe(FlowEvents.NOTEBOOK_RUN_REQUESTED, h)
+        self._ctx.events.subscribe(FlowEvents.NOTEBOOK_RUN_REQUESTED, h)
 
-        nb = LazyNotebook("nb_02", self.ctx)
+        nb = LazyNotebook("nb", self._ctx)
 
         # Act
-        nb.run()
+        nb.run(is_lazy=is_lazy)
 
         # Assert
         self.assertEqual(h.actual_nb, nb)
