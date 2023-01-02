@@ -1,13 +1,8 @@
 import unittest
-import re
 from unittest.mock import patch
-import pyspark
 from dtflw.events import EventHandlerBase, FlowEvents
 from dtflw.io.azure import AzureStorage
-# from soley.utils.notebook.flow20.flow import Flow
 from dtflw.logger import DefaultLogger
-# from soley.utils.notebook.flow20.plugins.notebook_args import EvalNotebookArgsEventHandler, EvalNotebookArgsPlugin
-# from soley.utils.testing.spark import StorageTestCase
 from ddt import ddt, data, unpack
 from dtflw.io.storage import file_exists
 from dtflw.lazy_notebook import LazyNotebook
@@ -62,87 +57,95 @@ class LazyNotebookTestCase(unittest.TestCase):
         )
 
         # Assert
-        self.assertEqual(len(nb.get_inputs()), 1)
 
         inputs = nb.get_inputs()
+
+        self.assertEqual(len(inputs), 1)
         self.assertIn("foo", inputs)
         self.assertEqual(inputs["foo"].name, "foo")
         self.assertEqual(inputs["foo"].abs_file_path, expected_input_path)
 
-    # .output() tests
+    def test_input_name_none_fails(self):
 
-    def test_output_with_relative_path(self):
+        with self.assertRaises(ValueError):
+            LazyNotebook("nb", None).input(name=None)
 
-        rel_output_path = "custom/relative/path/output.txt"
-        expected_output_path = self.ctx.storage.get_abs_path(
-            rel_output_path
+    @data(
+        # Default. Output's abs file path gets resolved from a path of the current notebook.
+        (None,
+         "wasbs://container@account.blob.core.windows.net/project/nb/foo.parquet"),
+        # Outputs's path is given as a relative path.
+        ("project/foo.parquet",
+         "wasbs://container@account.blob.core.windows.net/project/foo.parquet"),
+        # Outputs's path is given as an abs file path.
+        ("wasbs://container@account.blob.core.windows.net/foo.parquet",
+         "wasbs://container@account.blob.core.windows.net/foo.parquet")
+    )
+    @unpack
+    @patch("dtflw.databricks.get_this_notebook_abs_path")
+    def test_output_abs_file_path(self, file_path, expected_output_path, get_this_notebook_abs_path_mock):
+
+        # Arrange
+        get_this_notebook_abs_path_mock.return_value = "/Repos/a@b.c/project/main"
+
+        storage = AzureStorage("account", "container", "", None, None)
+        ctx = FlowContext(
+            storage=storage,
+            spark=None,
+            dbutils=None,
+            logger=DefaultLogger()
         )
 
-        nb = LazyNotebook("nb", self.ctx)\
-            .output("Table", file_path=rel_output_path)
-
-        self.assertEqual(
-            nb.get_outputs()["Table"].abs_file_path,
-            expected_output_path
+        # Act
+        nb = LazyNotebook("nb", ctx).output(
+            name="foo",
+            cols=None,
+            file_path=file_path,
+            alias=None
         )
 
-    def test_output_with_absolute_path(self):
+        # Assert
+        outputs = nb.get_outputs()
 
-        expected_output_path = self.ctx.storage.get_abs_path(
-            "custom/relative/path/output.txt"
-        )
-
-        nb = LazyNotebook("nb", self.ctx)\
-            .output("Table", file_path=expected_output_path)
-
-        self.assertEqual(
-            nb.get_outputs()["Table"].abs_file_path,
-            expected_output_path
-        )
+        self.assertEqual(len(outputs), 1)
+        self.assertIn("foo", outputs)
+        self.assertEqual(outputs["foo"].name, "foo")
+        self.assertEqual(outputs["foo"].abs_file_path, expected_output_path)
+        self.assertEqual(outputs["foo"].alias, "foo")
 
     @patch("dtflw.databricks.get_this_notebook_abs_path")
-    def test_output_with_default_path(self, get_this_notebook_abs_path_mock):
+    def test_output_alias(self, get_this_notebook_abs_path_mock):
 
-        get_this_notebook_abs_path_mock.return_value = "/Repos/user@a.b/project/main"
+        # Arrange
+        get_this_notebook_abs_path_mock.return_value = "/Repos/a@b.c/project/main"
 
-        expected_output_path = self.ctx.storage.get_abs_path(
-            self.ctx.storage.get_path_in_root_dir(
-                self.ctx.storage.get_path_with_file_extension(
-                    "project/nb/Table"
-                )
-            )
+        storage = AzureStorage("account", "container", "", None, None)
+        ctx = FlowContext(
+            storage=storage,
+            spark=None,
+            dbutils=None,
+            logger=DefaultLogger()
         )
 
-        nb = LazyNotebook("nb", self.ctx).output("Table")
-
-        self.assertEqual(
-            nb.get_outputs()["Table"].abs_file_path,
-            expected_output_path
+        # Act
+        nb = LazyNotebook("nb", ctx).output(
+            name="foo",
+            cols=None,
+            file_path=None,
+            alias="FooAliased"
         )
 
-    @patch("dtflw.databricks.get_this_notebook_abs_path")
-    def test_output_with_alias(self, get_this_notebook_abs_path_mock):
+        # Assert
+        outputs = nb.get_outputs()
 
-        get_this_notebook_abs_path_mock.return_value = "/Repos/user@a.b/project/main"
+        # Assert
+        self.assertIn("foo", outputs)
+        self.assertEqual(outputs["foo"].alias, "FooAliased")
 
-        expected_output_path = self.ctx.storage.get_abs_path(
-            self.ctx.storage.get_path_in_root_dir(
-                self.ctx.storage.get_path_with_file_extension(
-                    "project/nb/Table"
-                )
-            )
-        )
+    def test_output_name_none_fails(self):
 
-        nb = (
-            LazyNotebook("nb", self.ctx)
-            .output("Table", alias="TableAliased")
-        )
-
-        # Assert: the output points to the same actual file
-        self.assertEqual(
-            nb.get_outputs()["Table"].abs_file_path,
-            expected_output_path
-        )
+        with self.assertRaises(ValueError):
+            LazyNotebook("nb", None).output(name=None)
 
     # .run() tests
 
