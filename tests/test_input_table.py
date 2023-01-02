@@ -1,5 +1,4 @@
 import unittest
-from dtflw.io.azure import AzureStorage
 from dtflw.logger import DefaultLogger
 from dtflw.flow_context import FlowContext
 from dtflw.input_table import InputTable
@@ -18,7 +17,7 @@ class InputTableTestCase(unittest.TestCase):
             fs_ls_raises_error=False,
             ls_return=[(input_file_name, input_file_path)]
         )
-        storage = AzureStorage("account", "container", "", None, dbutils_mock)
+        storage = utils.StorageMock("account", "container", "", None, dbutils_mock)
 
         i = InputTable(
             name=input_name,
@@ -43,7 +42,7 @@ class InputTableTestCase(unittest.TestCase):
     def test_validate_fails_file_does_not_exist(self):
 
         dbutils_mock = utils.mock_dbutils(fs_ls_raises_error=True)
-        storage = AzureStorage("account", "container", "", None, dbutils_mock)
+        storage = utils.StorageMock("account", "container", "", None, dbutils_mock)
 
         i = InputTable(
             name="foo",

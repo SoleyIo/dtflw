@@ -1,20 +1,20 @@
 import unittest
 from unittest.mock import MagicMock, patch
 from dtflw.events import EventHandlerBase, FlowEvents
-from dtflw.io.azure import AzureStorage
 from dtflw.logger import DefaultLogger
 from ddt import ddt, data, unpack
-from dtflw.io.storage import file_exists
 from dtflw.lazy_notebook import LazyNotebook
 from dtflw.flow_context import FlowContext
-import dtflw.databricks
+from tests.utils import StorageMock
 
 
 @ddt
 class LazyNotebookTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
-        self._storage = AzureStorage("account", "container", "", None, None)
+        self._storage = StorageMock(
+            "account", "container", "", None, None)
+            
         self._ctx = FlowContext(
             storage=self._storage,
             spark=None,
@@ -132,8 +132,6 @@ class LazyNotebookTestCase(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             LazyNotebook("nb", None).output(name=None)
-
-    # .run() tests
 
     @data(
         (True, False, False),

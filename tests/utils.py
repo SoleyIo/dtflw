@@ -1,6 +1,24 @@
 from collections import namedtuple
 from unittest.mock import MagicMock, patch
 
+from dtflw.io.storage import FileStorageBase
+
+
+class StorageMock(FileStorageBase):
+    def __init__(self, account_name="account", container_name="container", root_dir="", spark=None, dbutils=None):
+
+        super().__init__(spark, dbutils, root_dir)
+
+        self.__account_name = account_name
+        self.__container_name = container_name
+
+    @property
+    def base_path(self):
+        """
+        Returns the base path.
+        """
+        return f"wasbs://{self.__container_name}@{self.__account_name}.blob.core.windows.net"
+
 
 def mock_dbutils(fs_ls_raises_error=False, ls_return=[]):
     """

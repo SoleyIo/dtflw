@@ -1,7 +1,6 @@
 import unittest
 from unittest.mock import patch
-from ddt import ddt, data, unpack
-from dtflw.io.azure import AzureStorage
+from ddt import ddt, data
 from dtflw.logger import DefaultLogger
 from dtflw.flow_context import FlowContext
 from dtflw.output_table import OutputTable
@@ -24,7 +23,7 @@ class OutputTableTestCase(unittest.TestCase):
             abs_file_path="foo.parquet",
             cols=[("id", "bigint")],
             ctx=FlowContext(
-                storage=AzureStorage("account", "container",
+                storage=utils.StorageMock("account", "container",
                                      "", spark_mock, dbutils_mock),
                 spark=spark_mock,
                 dbutils=dbutils_mock,
@@ -50,7 +49,7 @@ class OutputTableTestCase(unittest.TestCase):
             abs_file_path="foo.parquet",
             cols=[("id", "bigint")],
             ctx=FlowContext(
-                storage=AzureStorage("account", "container",
+                storage=utils.StorageMock("account", "container",
                                      "", spark_mock, dbutils_mock),
                 spark=spark_mock,
                 dbutils=dbutils_mock,
@@ -77,7 +76,7 @@ class OutputTableTestCase(unittest.TestCase):
             # Expected columns
             cols=[("name", "string")],
             ctx=FlowContext(
-                storage=AzureStorage("account", "container",
+                storage=utils.StorageMock("account", "container",
                                      "", spark_mock, dbutils_mock),
                 spark=spark_mock,
                 dbutils=dbutils_mock,
@@ -103,7 +102,7 @@ class OutputTableTestCase(unittest.TestCase):
             abs_file_path="foo.parquet",
             cols=None,
             ctx=FlowContext(
-                storage=AzureStorage("account", "container",
+                storage=utils.StorageMock("account", "container",
                                      "", None, dbutils_mock),
                 spark=None,
                 dbutils=dbutils_mock,
