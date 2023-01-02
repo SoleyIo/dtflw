@@ -209,7 +209,7 @@ class LazyNotebook:
         ----------
         is_lazy: bool
             Lazy behavior depending on the condition
-            is_lazy AND (any of outputs needs to be evaluated)
+            is_lazy AND (at least one output needs to be evaluated)
 
             True, False  => skip
             True, True   => run
