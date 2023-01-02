@@ -225,11 +225,30 @@ class LazyNotebookTestCase(unittest.TestCase):
         # Act/Assert
         self.assertEqual(nb.run(is_lazy=False), "foo")
 
-    def test_collect_args(self):
-        #TODO: implement
-        raise NotImplementedError()
+    @patch("dtflw.databricks.get_this_notebook_abs_path")
+    def test_collect_args(self, get_this_notebook_abs_path_mock):
 
-   # Events tests
+        # Arrange
+        get_this_notebook_abs_path_mock.return_value = "/Repos/a@b.c/project/main"
+
+        # Act
+        actual_args = (
+            LazyNotebook("nb", self._ctx)
+            .args({
+                "foo": "bar",
+            })
+            .input("bar")
+            .output("baz")
+        ).collect_args()
+
+        # Assert
+        self.assertListEqual(
+            actual_args,
+            [
+                ('foo', 'bar', ''),
+                ('bar', None, '_in'),
+                ('baz', 'wasbs://container@account.blob.core.windows.net/project/nb/baz.parquet', '_out')]
+        )
 
     @data(False, True)
     @patch("dtflw.databricks.get_this_notebook_abs_path")
