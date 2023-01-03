@@ -176,9 +176,9 @@ class LazyNotebook:
         """
         return ctx.dbutils.notebook.run(path, timeout, args)
 
-    def collect_args(self):
+    def collect_arguments(self):
         """
-        Collects all the arguments: regular arguments as well as inputs and outputs.
+        Collects all the arguments: regular arguments (args) as well as inputs and outputs.
 
         Returns
         -------
@@ -244,7 +244,7 @@ class LazyNotebook:
                 f"\t'{dtflw.databricks.get_notebook_abs_path(self.rel_path)}'")
 
             all_args = {f"{name}{suffix}": value
-                        for (name, value, suffix) in self.collect_args()}
+                        for (name, value, suffix) in self.collect_arguments()}
 
             self.__last_run_result = LazyNotebook.__run_notebook(
                 self.rel_path,

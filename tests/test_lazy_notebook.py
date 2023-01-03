@@ -224,7 +224,7 @@ class LazyNotebookTestCase(unittest.TestCase):
         self.assertEqual(nb.run(is_lazy=False), "foo")
 
     @patch("dtflw.databricks.get_this_notebook_abs_path")
-    def test_collect_args(self, get_this_notebook_abs_path_mock):
+    def test_collect_arguments(self, get_this_notebook_abs_path_mock):
 
         # Arrange
         get_this_notebook_abs_path_mock.return_value = "/Repos/a@b.c/project/main"
@@ -237,7 +237,7 @@ class LazyNotebookTestCase(unittest.TestCase):
             })
             .input("bar")
             .output("baz")
-        ).collect_args()
+        ).collect_arguments()
 
         # Assert
         self.assertListEqual(
