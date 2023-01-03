@@ -2,7 +2,7 @@
 *All notable changes to this package are documented in this file.*
 
 ## [0.0.8] - 03.01.2023
-- Replaced `Runtime` with `RunsRecorder`. Renamed `LazyNotebook.collect_args` to `LazyNotebook.collect_arguments`.
+- Replaced `Runtime` with `PipelineState`. Renamed `LazyNotebook.collect_args` to `LazyNotebook.collect_arguments`.
 
 ## [0.0.7] - 02.01.2023
 - Added `flow`, `plugin`, `flow_context`, `input_table`, `output_table`, `lazy_notebook`.
