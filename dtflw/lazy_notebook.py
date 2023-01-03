@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dtflw.events import FlowEvents
-from dtflw.runtime import NotebookRun
+from dtflw.pipeline import NotebookRun
 import dtflw.databricks
 import typing
 from dtflw.flow_context import FlowContext
@@ -176,9 +176,9 @@ class LazyNotebook:
         """
         return ctx.dbutils.notebook.run(path, timeout, args)
 
-    def collect_args(self):
+    def collect_arguments(self):
         """
-        Collects all the arguments: regular arguments as well as inputs and outputs.
+        Collects all the arguments: regular arguments (args) as well as inputs and outputs.
 
         Returns
         -------
@@ -244,7 +244,7 @@ class LazyNotebook:
                 f"\t'{dtflw.databricks.get_notebook_abs_path(self.rel_path)}'")
 
             all_args = {f"{name}{suffix}": value
-                        for (name, value, suffix) in self.collect_args()}
+                        for (name, value, suffix) in self.collect_arguments()}
 
             self.__last_run_result = LazyNotebook.__run_notebook(
                 self.rel_path,
@@ -265,7 +265,7 @@ class LazyNotebook:
         # Record the completed notebook's run.
         inputs = {name: i.abs_file_path for name, i in self.__inputs.items()}
 
-        self.ctx.runtime.add_run(
+        self.ctx.pipeline.record_run(
             NotebookRun(
                 dtflw.databricks.get_notebook_abs_path(self.rel_path),
                 self.get_args(),
