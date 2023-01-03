@@ -1,11 +1,11 @@
 import unittest
-from dtflw.runs_recorder import NotebookRun, RunsRecorder
+from dtflw.pipeline import NotebookRun, PipelineState
 
-class RuntimeTestCase(unittest.TestCase):
+class PipelineStateTestCase(unittest.TestCase):
 
-    def test_add(self):
+    def test_record_run(self):
         # Arrange
-        runtime = RunsRecorder()
+        p = PipelineState()
 
         # Act
         r1 = NotebookRun(
@@ -14,10 +14,10 @@ class RuntimeTestCase(unittest.TestCase):
             {"input": "input_path"},
             {"output": "output_path"}
         )
-        runtime.add(r1)
+        p.record_run(r1)
 
         # Assert
-        actual_run = list(runtime.runs)[0]
+        actual_run = list(p.runs)[0]
 
         self.assertEqual("notebook_1", actual_run.notebook_path)
         self.assertEqual({"arg": "val"}, actual_run.args)
