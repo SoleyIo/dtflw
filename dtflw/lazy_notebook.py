@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dtflw.events import FlowEvents
-from dtflw.runtime import NotebookRun
+from dtflw.runs_recorder import NotebookRun
 import dtflw.databricks
 import typing
 from dtflw.flow_context import FlowContext
@@ -265,7 +265,7 @@ class LazyNotebook:
         # Record the completed notebook's run.
         inputs = {name: i.abs_file_path for name, i in self.__inputs.items()}
 
-        self.ctx.runtime.add_run(
+        self.ctx.runs.add(
             NotebookRun(
                 dtflw.databricks.get_notebook_abs_path(self.rel_path),
                 self.get_args(),

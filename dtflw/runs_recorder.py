@@ -40,7 +40,7 @@ class NotebookRun():
         return self.__outputs
 
 
-class Runtime():
+class RunsRecorder():
     """
     Represents the current execution state of notebooks in Flow.
     """
@@ -57,9 +57,9 @@ class Runtime():
         for run in self.__runs.values():
             yield run
 
-    def add_run(self, run: NotebookRun):
+    def add(self, run: NotebookRun):
         """
-        Remembers a notebook's run.
+        Records a notebook's run.
         If a run has a notebook's path remembered before then it overwrites the latter.
 
         Parameters

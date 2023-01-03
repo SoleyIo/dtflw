@@ -3,7 +3,7 @@ from pyspark.sql.session import SparkSession
 from dtflw.io.storage import FileStorageBase
 from dtflw.events import EventDispatcher
 from dtflw.logger import LoggerBase
-from dtflw.runtime import Runtime
+from dtflw.runs_recorder import RunsRecorder
 from dtflw.tables_repo import TablesRepository
 
 
@@ -20,7 +20,7 @@ class FlowContext():
         self.tables_repo = TablesRepository()
         self.logger = logger
         self.events = EventDispatcher()
-        self.runtime = Runtime()
+        self.runs = RunsRecorder()
 
     @property
     def logger(self) -> LoggerBase:

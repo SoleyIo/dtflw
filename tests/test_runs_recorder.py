@@ -1,11 +1,11 @@
 import unittest
-from dtflw.runtime import NotebookRun, Runtime
+from dtflw.runs_recorder import NotebookRun, RunsRecorder
 
 class RuntimeTestCase(unittest.TestCase):
 
-    def test_add_run(self):
+    def test_add(self):
         # Arrange
-        runtime = Runtime()
+        runtime = RunsRecorder()
 
         # Act
         r1 = NotebookRun(
@@ -14,7 +14,7 @@ class RuntimeTestCase(unittest.TestCase):
             {"input": "input_path"},
             {"output": "output_path"}
         )
-        runtime.add_run(r1)
+        runtime.add(r1)
 
         # Assert
         actual_run = list(runtime.runs)[0]
