@@ -6,7 +6,7 @@ from io import StringIO
 
 class DefaultLoggerTestCase(unittest.TestCase):
         
-        
+
     def test_default_logger_log_in_default_verbosity(self):
 
         default_logger = DefaultLogger()
@@ -95,4 +95,18 @@ class DefaultLoggerTestCase(unittest.TestCase):
             default_logger.log('hello world!')
             output = out.getvalue().strip()
 
+
+    def test_default_logger_log_default_verbosity_true_info(self):
+
+        default_logger = DefaultLogger()
+
+        out = StringIO()
+        sys.stdout = out
+        default_logger.info = True
+
+        default_logger.log('hello world!')
+        output = out.getvalue().strip()
+
+        # Assert
+        self.assertEqual(output, "hello world!")
      
