@@ -2,35 +2,43 @@
 
 `dtflw` is a Python framework for building modular data pipelines based on [Databricks dbutils.notebook API](https://docs.databricks.com/notebooks/notebook-workflows.html). It was conceived with an intention to facilitate development and maintenance of Databricks data pipelines.
 
-[Databricks](https://docs.databricks.com/notebooks/index.html) offers all necessary to nicely organize and manage code of a data pipeline according to different requirements and tastes. Also, it does not impose any specific file structure on a repo of a pipeline neither strinctly regulates relationships between data (tables in this context) and transformation code.
+[Databricks](https://docs.databricks.com/notebooks/index.html) offers everything necessary to organize and manage code of data pipelines according to different requirements and tastes. Also, it does not impose any specific file structure on a repo of a pipeline neither regulates relationships between data (tables) and code transforming them (notebooks).
 
-In general, such freedom is an advantage, but with an increasing 
-- complexity of data pipelines (e.g. number of loc, notebooks, tables),
-- overal number of production pipelines which require regular maintenance
+In general, such freedom is an advantage, but with increasing complexity of a pipeline (e.g. growing number of loc, notebooks, volume and variety of data)
+>_it gets difficult and laborious to work with a codebase of a pipeline while debugging, extending or refactoring it._
 
->_it gets difficult to work with a codebase to fix a bug, introduce an extension or refactor it._
+Together with a growing overall number of such pipelines, consequently grow efforts of their development and maintenance.
 
-> TODO: what such difficulties are caused by?
+This project identifies `implicit relationships between data and code in a pipeline` as the main reason of the problem described above. In other words:
+> - Among dozens of notebooks of a pipeline, it is difficult to keep in mind which table a notebooks requires to work and what tables it produces.
+> - From the other side: exploring tables (files) on a storage (e.g. Azure Blob, AWS S3), it may be difficult to relate which notebook produced it.
 
-`dtflw` embodies practices which aim at mitigating such difficulties.
+`dtflw` addresses the problem by building on a simple dataflow model:
+> Each notebook of a pipeline
+> 1. (may) consume tables (inputs), 
+> 2. (may) produce tables (outputs),
+> 3. and may declare additional arguments it requires to run.  
+>
+> Thus, a pipeline is a sequence of notebooks chained by input-output tables.
 
-It builds around a simple dataflow model according to which 
-> 1. A notebook consumes tables (inputs), produces tables (outputs) and may require additional arguments to work.  
-> 2. Such notebooks are chained in a data pipeline.
-> 3. ?
+In such a way, `dtflw` `makes relationships between tables and notebooks explicit`.
 
-Here is an example of a data pipeline which is built with `dtflw`:
-```
+Here is an example of a Databricks pipeline built using `dtflw`:
+
+.. code-block:: python
+
 from dtflw import init_flow
-from dtflw.io.azure imprt AzureStorage
+from dtflw.io.azure import AzureStorage
 
 storage = AzureStorage("account", "container", spark, dbutils)
 flow = init_flow(storage)
+is_lazy = True
 
 (
     flow.notebook("ingest_data")
+        .input("sales_orders_raw", file_path="raw_data/sales_records_*.csv")
         .output("sales_orders_bronze")
-        .run()
+        .run(is_lazy)
 )
 
 (
@@ -39,7 +47,7 @@ flow = init_flow(storage)
         .output("sales_orders_silver")
         .output("products_silver")
         .output("customers_silver")
-        .run()
+        .run(is_lazy)
 )
 
 (
@@ -52,9 +60,14 @@ flow = init_flow(storage)
         .input("products_silver")
         .output("sales_stats_by_product_gold")
         .output("sales_stats_by_customer_gold")
-        .run()
+        .run(is_lazy)
 )
-```
+
+sales_stats_by_product_df = storage.read_table(_flow["sales_stats_by_product_gold"])
+sales_stats_by_product_df.display()
+
+
+`dtflw` is implemented using `dbutils`, `dbutils.notebooks` and `dbutils.widgets` APIs provided by Databricks and can be easily mixed with them.
 
 ## Getting Started
 
