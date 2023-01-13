@@ -25,8 +25,7 @@ In such a way, `dtflw` `makes relationships between tables and notebooks explici
 
 Here is an example of a Databricks pipeline built using `dtflw`:
 
-.. code-block:: python
-
+```python
 from dtflw import init_flow
 from dtflw.io.azure import AzureStorage
 
@@ -65,7 +64,7 @@ is_lazy = True
 
 sales_stats_by_product_df = storage.read_table(_flow["sales_stats_by_product_gold"])
 sales_stats_by_product_df.display()
-
+```
 
 `dtflw` is implemented using `dbutils`, `dbutils.notebooks` and `dbutils.widgets` APIs provided by Databricks and can be easily mixed with them.
 
