@@ -27,7 +27,7 @@ Here is an example of a Databricks pipeline built using `dtflw`:
 
 ```python
 # Notebook 
-# /Repos/user@company.com/demo/main'
+# /Repos/user@company.com/project/main'
 
 from dtflw import init_flow
 from dtflw.io.azure import init_storage
@@ -44,7 +44,7 @@ is_lazy = True
 )
 
 (
-    flow.notebook("imprt_data")
+    flow.notebook("import_data")
         .input("sales_orders_bronze")
         .output("sales_orders_silver")
         .output("products_silver")
@@ -79,50 +79,44 @@ https://account.blob.core.windows.net/container/
         sales_records_2022.csv
 
     analysis/
-        ingest_data/
-            sales_orders_bronze.parquet/
-        imprt_data/
-            sales_orders_silver.parquet/
-            products_silver.parquet/
-            customers_silver.parquet/
-        calculate_sales_stats/
-            sales_stats_by_product_gold.parquet/
-            sales_stats_by_customer_gold.parquet/
+        project/
+            ingest_data/
+                sales_orders_bronze.parquet/
+            import_data/
+                sales_orders_silver.parquet/
+                products_silver.parquet/
+                customers_silver.parquet/
+            calculate_sales_stats/
+                sales_stats_by_product_gold.parquet/
+                sales_stats_by_customer_gold.parquet/
 ```
 
-## [TODO] Getting Started
+## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+Clone the repo `git clone https://github.com/SoleyIo/dtflw.git`
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
+`dtflw` is tested with Python 3.8.*.
 
+Install dependencies from the `install_requires` section in [setup.py](setup.py). You may want to to do that in a virtual environment and could use [virtualenv](https://pypi.org/project/virtualenv/) for that.
+
+### Building
+
+Build a `.whl` Python package 
 ```
-Give examples
+python setup.py sdist bdist_wheel
 ```
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
+As soon as you have a `.whl` Python package, [install it on a Databricks cluster](dtflw-0.0.8-py3-none-any.whl). 
 
-Say what the step will be
-
-```
-Give the example
-```
-
-And repeat
-
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
+`dtflw` is ready to be used.
 
 ## Changes
 
-Please, refer to [CHANGES.md]() file to see previous changes made to this repo.
+Please, refer to [previous changes made to this repo](CHANGES.md).
 
 ## Built With
 

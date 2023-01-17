@@ -1,6 +1,6 @@
 from dtflw.io.storage import FileStorageBase
 from pyspark.sql.session import SparkSession
-import databricks
+import dtflw.databricks as db
 
 
 class AzureStorage(FileStorageBase):
@@ -74,12 +74,12 @@ def init_storage(account_name: str, container_name: str, root_dir: str = None, s
         raise ValueError("container_name cannot be None nor empty string.")
 
     if root_dir is None:
-        root_dir = databricks.get_current_username()
+        root_dir = db.get_current_username()
 
     if spark is None:
-        spark = databricks.get_spark_session()
+        spark = db.get_spark_session()
 
     if dbutils is None:
-        dbutils = databricks.get_dbutils()
+        dbutils = db.get_dbutils()
 
     return AzureStorage(account_name, container_name, root_dir, spark, dbutils)
