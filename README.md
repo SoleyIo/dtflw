@@ -69,7 +69,7 @@ sales_stats_by_product_df = storage.read_table(_flow["sales_stats_by_product_gol
 sales_stats_by_product_df.display()
 ```
 
-Additionally, `dtflw` takes care of managing tables on a storage. It derives file paths from path of corresponding notebooks which produce them. For the example above, folders in an Azure blob container would look something like this:
+Additionally, `dtflw` manages file paths of output tables. It derives file paths of tables from path of corresponding notebooks which save them on a storage. For the example above, an Azure blob container would look something like this:
 ```
 https://account.blob.core.windows.net/container/
 
@@ -93,7 +93,7 @@ https://account.blob.core.windows.net/container/
 
 ## Getting Started
 
-Clone the repo `git clone https://github.com/SoleyIo/dtflw.git`
+Clone the repo `git clone https://github.com/SoleyIo/dtflw.git`.
 
 ### Prerequisites
 
@@ -103,10 +103,7 @@ Install dependencies from the `install_requires` section in [setup.py](setup.py)
 
 ### Building
 
-Build a `.whl` Python package 
-```
-python setup.py sdist bdist_wheel
-```
+Build a `.whl` Python package `python setup.py sdist bdist_wheel`.
 
 ### Installing
 
@@ -116,7 +113,7 @@ As soon as you have a `.whl` Python package, [install it on a Databricks cluster
 
 ## Changes
 
-Please, refer to [previous changes made to this repo](CHANGES.md).
+Please, refer to [the log of changes](CHANGES.md) made to this repo in every new version.
 
 ## Built With
 
