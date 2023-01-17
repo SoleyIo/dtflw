@@ -1,4 +1,4 @@
-from build.lib.dtflw.flow_context import FlowContext
+from dtflw.flow_context import FlowContext
 from dtflw.flow import Flow
 import dtflw.databricks as db
 from dtflw.logger import DefaultLogger
