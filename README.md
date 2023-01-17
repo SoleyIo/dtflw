@@ -130,10 +130,8 @@ Please, refer to [CHANGES.md]() file to see previous changes made to this repo.
 
 ## Contributing
 
-Please refer to 
-- [CODE_OF_CONDUCT.md]() for details on our code of conduct , and
-- [CONTRIBUTING.md]() for details on how to contribute to the project.
+Please refer to [our code of conduct](CODE_OF_CONDUCT.md) and to [our contributing guidelines](CONTRIBUTING.md) for details.
 
 ## License
 
-This project is licensed under the [BSD 3-Clause License](https://github.com/SoleyIo/dtflw/blob/main/LICENSE).
+This project is licensed under the [BSD 3-Clause License](LICENSE).
