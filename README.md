@@ -1,4 +1,4 @@
-# dtflw / dataflow
+# dtflw / <ins>d</ins>a<ins>t</ins>a<ins>fl</ins>o<ins>w</ins>
 
 `dtflw` is a Python framework for building modular data pipelines based on [Databricks dbutils.notebook API](https://docs.databricks.com/notebooks/notebook-workflows.html). It was conceived with an intention to facilitate development and maintenance of Databricks data pipelines.
 
