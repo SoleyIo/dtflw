@@ -8,9 +8,9 @@
 In general, such freedom is an advantage, but with a growing number of notebooks, variety of data and complexity of analysis logic
 >_it gets laborious to work with a codebase of a pipeline while debugging, extending or refactoring it._
 
-Among dozens of notebooks of a pipeline and thousands lines of code, `it is difficult to keep in mind which table a notebooks requires to work and what tables it produces`. On the other side, when exploring tables (files) on a storage (e.g. Azure Blob, AWS S3), `it is unclear which code wrote those tables`.
+Among dozens of notebooks of a pipeline and thousands lines of code, `it is difficult to keep in mind which tables a notebooks requires to work and what tables it produces`. On the other side, when exploring tables (files) on a storage (e.g. Azure Blob, AWS S3), `it is unclear which code wrote those tables`.
 
-The complexity rises even more when a team needs to `maintain many of such pipelines which are organized without a uniform structural pattern`.
+The complexity rises even more when a team needs to `maintain many of such pipelines which are not structured according to a single uniform pattern`.
 
 ## How `dtflw` works
 This project identifies `implicit relationships between data and code in a pipeline` as the main reason for increasing complexity.
