@@ -8,7 +8,7 @@
 In general, such freedom is an advantage, but with a growing number of notebooks, variety of data and complexity of analysis logic
 >_it gets laborious to work with a codebase of a pipeline while debugging, extending or refactoring it._
 
-Among dozens of notebooks of a pipeline and thousands lines of code, `it is difficult to keep in mind which tables a notebooks requires to work and what tables it produces`. On the other side, when exploring tables (files) on a storage (e.g. Azure Blob, AWS S3), `it is unclear which code wrote those tables`.
+Among dozens of notebooks of a pipeline and thousands lines of code, `it is difficult to keep in mind which tables a notebooks requires and what tables it produces`. On the other side, when exploring tables (files) on a storage (e.g. Azure Blob, AWS S3), `it is unclear which code wrote those tables`.
 
 The complexity rises even more when a team needs to `maintain many of such pipelines which are not structured according to a single uniform pattern`.
 
@@ -38,17 +38,19 @@ is_lazy = True
 
 (
     flow.notebook("ingest_data")
-        .input("sales_orders_raw", file_path="raw_data/sales_records_*.csv")
-        .output("sales_orders_bronze")
+        .input("sales_records_raw", file_path="raw_data/sales_records_*.csv")
+        # Bronze
+        .output("sales_records")
         .run(is_lazy)
 )
 
 (
     flow.notebook("import_data")
-        .input("sales_orders_bronze")
-        .output("sales_orders_silver")
-        .output("products_silver")
-        .output("customers_silver")
+        .input("sales_records")
+        # Silver
+        .output("sales_orders")
+        .output("products")
+        .output("customers")
         .run(is_lazy)
 )
 
@@ -57,19 +59,40 @@ is_lazy = True
         .args({
             "year" : "2022"
         })
-        .input("sales_orders_silver")
-        .input("customers_silver")
-        .input("products_silver")
-        .output("sales_stats_by_product_gold")
-        .output("sales_stats_by_customer_gold")
+        .input("sales_orders")
+        .input("customers")
+        .input("products")
+        # Gold
+        .output("sales_stats_by_product")
+        .output("sales_stats_by_customer")
         .run(is_lazy)
 )
 
-sales_stats_by_product_df = storage.read_table(_flow["sales_stats_by_product_gold"])
+sales_stats_by_product_df = storage.read_table(_flow["sales_stats_by_product"])
 sales_stats_by_product_df.display()
 ```
 
-Additionally, `dtflw` manages file paths of output tables. It derives file paths of tables from path of corresponding notebooks which save them on a storage. For the example above, an Azure blob container would look something like this:
+File paths of input and output tables are passed to a callee notebook as arguments. [dbutils.widgets API](https://docs.databricks.com/notebooks/widgets.htm) is used to fetch values passed at runtime.
+
+```python
+# Notebook 
+# /Repos/user@company.com/project/calculate_sales_stats'
+
+# Notice "_in" suffix for inputs
+dbutils.widgets.text("sales_orders_in", "")
+sales_orders_path = dbutils.widgets.get("sales_orders_in")
+
+# Notice "_out" suffix for outputs
+dbutils.widgets.text("sales_stats_by_product_out", "")
+sales_stats_by_product_path = dbutils.widgets.get("sales_stats_by_product_out")
+
+# ...
+sales_orders_df = spark.read.parquet(sales_orders_path)
+# ...
+sales_stats_by_product_df.spark.write.mode("overwrite").parquet(sales_stats_by_product_path)
+```
+
+Additionally, `dtflw` takes care of constructing file paths for output tables. It derives file paths of outputs from path of corresponding notebooks which save them. For the example above, an Azure blob container would look something like this:
 ```
 https://account.blob.core.windows.net/container/
 
@@ -81,11 +104,11 @@ https://account.blob.core.windows.net/container/
     analysis/
         project/
             ingest_data/
-                sales_orders_bronze.parquet/
+                sales_orders.parquet/
             import_data/
-                sales_orders_silver.parquet/
-                products_silver.parquet/
-                customers_silver.parquet/
+                sales_orders.parquet/
+                products.parquet/
+                customers.parquet/
             calculate_sales_stats/
                 sales_stats_by_product_gold.parquet/
                 sales_stats_by_customer_gold.parquet/
