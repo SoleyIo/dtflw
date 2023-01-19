@@ -1,7 +1,7 @@
 from __future__ import annotations
 from dtflw.events import FlowEvents
 from dtflw.pipeline import NotebookRun
-import dtflw.databricks
+import dtflw.databricks as db
 import typing
 from dtflw.flow_context import FlowContext
 from dtflw.input_table import InputTable
@@ -127,7 +127,7 @@ class LazyNotebook:
             # default behavior
 
             # path of this notebook starting with project's dir
-            project_based_nb_path = dtflw.databricks.get_path_relative_to_project_dir(
+            project_based_nb_path = db.get_path_relative_to_project_dir(
                 self.rel_path)
 
             output_file_path = self.ctx.storage.get_abs_path(
@@ -236,12 +236,12 @@ class LazyNotebook:
         if is_lazy and not any_output_needs_eval:
             self.ctx.logger.log(f"Skipped run:")
             self.ctx.logger.log(
-                f"\t'{dtflw.databricks.get_notebook_abs_path(self.rel_path)}'")
+                f"\t'{db.get_notebook_abs_path(self.rel_path)}'")
 
         else:
             self.ctx.logger.log(f"Running:")
             self.ctx.logger.log(
-                f"\t'{dtflw.databricks.get_notebook_abs_path(self.rel_path)}'")
+                f"\t'{db.get_notebook_abs_path(self.rel_path)}'")
 
             all_args = {f"{name}{suffix}": value
                         for (name, value, suffix) in self.collect_arguments()}
@@ -267,7 +267,7 @@ class LazyNotebook:
 
         self.ctx.pipeline.record_run(
             NotebookRun(
-                dtflw.databricks.get_notebook_abs_path(self.rel_path),
+                db.get_notebook_abs_path(self.rel_path),
                 self.get_args(),
                 inputs,
                 outputs
