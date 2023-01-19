@@ -89,10 +89,13 @@ sales_stats_by_product_path = dbutils.widgets.get("sales_stats_by_product_out")
 # ...
 sales_orders_df = spark.read.parquet(sales_orders_path)
 # ...
-sales_stats_by_product_df.spark.write.mode("overwrite").parquet(sales_stats_by_product_path)
+sales_stats_by_product_df.write.mode("overwrite").parquet(sales_stats_by_product_path)
 ```
 
-Additionally, `dtflw` takes care of constructing file paths for output tables. It derives file paths of outputs from path of corresponding notebooks which save them. For the example above, an Azure blob container would look something like this:
+Additionally, `dtflw` takes care of constructing file paths for output tables. 
+> It derives file paths of outputs from a path of corresponding notebook which save them. 
+
+For the example above, an Azure blob container would look something like this:
 ```
 https://account.blob.core.windows.net/container/
 
@@ -136,7 +139,7 @@ As soon as you have a `.whl` Python package, [install it on a Databricks cluster
 
 ## Changes
 
-Please, refer to [the log of changes](CHANGES.md) made to this repo in every new version.
+Please, refer to [the log of changes](CHANGES.md). Here we record all notable changes made to the codebase in every version.
 
 ## Built With
 
