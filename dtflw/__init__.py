@@ -1,21 +1,24 @@
 from dtflw.flow_context import FlowContext
 from dtflw.flow import Flow
 import dtflw.databricks as db
-from dtflw.logger import DefaultLogger
+from dtflw.logger import DefaultLogger, LoggerBase
+from pyspark.sql import SparkSession
 
 
-def init_flow(storage, spark=None, dbutils=None) -> Flow:
+def init_flow(storage, spark: SparkSession = None, dbutils=None, logger: LoggerBase = None) -> Flow:
     """
     Initializes a new, configured by default, instance of Flow and returns it.
     """
 
-    if not spark:
+    if spark is None:
         spark = db.get_spark_session()
 
-    if not dbutils:
+    if dbutils is None:
         dbutils = db.get_dbutils()
 
-    logger = DefaultLogger()
+    if logger is None:
+        logger = DefaultLogger()
+
     ctx = FlowContext(storage, spark, dbutils, logger)
 
     return Flow(ctx)
