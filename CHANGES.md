@@ -1,6 +1,10 @@
 # Changes
 _All notable changes to this codebase are documented in this file._
 
+## [0.0.9] - 19.01.2023
+- Added `dtflw.init_flow` and `dtflw.io.azure.init_storage` factory functions.
+- Updated the README and documents.
+
 ## [0.0.8] - 03.01.2023
 - Replaced `Runtime` with `PipelineState`. Renamed `LazyNotebook.collect_args` to `LazyNotebook.collect_arguments`.
 
