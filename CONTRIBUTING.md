@@ -53,7 +53,11 @@ We document all notable changes in [CHANGE.md](CHANGES.md) file. Please, use the
 
 ## Versioning
 
-We use [semantic versioning](https://semver.org/#summary): _MAJOR.MINOR.PATCH_
+We use [semantic versioning](https://semver.org/#summary): `MAJOR.MINOR.PATCH` where we update
+
+1. `MAJOR` version when you make incompatible API changes
+2. `MINOR` version when you add functionality in a backwards compatible manner
+3. `PATCH` version when you make backwards compatible bug fixes
 
 ## License
 When you submit code changes, your submissions are understood to be under the same [BSD 3-Clause License](LICENSE) that covers the project. Feel free to contact the maintainers if that's a concern.
