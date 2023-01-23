@@ -76,10 +76,13 @@ class FlowContext():
 
     def show(self):
         """
-        Prints all published tables.
+        Show all published tables.
         """
-        self.logger.log("Evaluated tables:")
+
+        c = "Evaluated tables:"
         for (t_name, t_pubs) in self.tables_repo.tables.items():
-            self.logger.log(f"'{t_name}'")
+            c += f"\n'{t_name}'"
             for t_nb_path, t_abs_path in t_pubs.items():
-                self.logger.log(f"  '{t_nb_path}' : '{t_abs_path}'")
+                c += f"\n  '{t_nb_path}' : '{t_abs_path}'"
+
+        self.display.show(c)
