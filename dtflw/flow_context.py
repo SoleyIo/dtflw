@@ -1,5 +1,6 @@
 import typing
 from pyspark.sql.session import SparkSession
+from dtflw.display import DefaultDisplay
 from dtflw.io.storage import FileStorageBase
 from dtflw.events import EventDispatcher
 from dtflw.logger import LoggerBase
@@ -21,6 +22,7 @@ class FlowContext():
         self.logger = logger
         self.events = EventDispatcher()
         self.pipeline = PipelineState()
+        self.display = DefaultDisplay()
 
     @property
     def logger(self) -> LoggerBase:
