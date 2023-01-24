@@ -1,18 +1,18 @@
 import unittest
-from dtflw.logger import DefaultLogger
+from dtflw.display import DefaultDisplay
 import sys
 from io import StringIO
 
 
-class DefaultLoggerTestCase(unittest.TestCase):
+class DefaultDisplayTestCase(unittest.TestCase):
 
-    def log(self):
+    def test_show(self):
 
-        logger = DefaultLogger()
+        display = DefaultDisplay()
 
         out = StringIO()
         sys.stdout = out
-        logger.log('hello world!')
+        display.show('hello world!')
         output = out.getvalue().strip()
 
         # Assert

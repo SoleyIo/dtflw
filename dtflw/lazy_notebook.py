@@ -234,14 +234,12 @@ class LazyNotebook:
         )
 
         if is_lazy and not any_output_needs_eval:
-            self.ctx.logger.log(f"Skipped run:")
             self.ctx.logger.log(
-                f"\t'{db.get_notebook_abs_path(self.rel_path)}'")
+                f"Skipped run: '{db.get_notebook_abs_path(self.rel_path)}'")
 
         else:
-            self.ctx.logger.log(f"Running:")
             self.ctx.logger.log(
-                f"\t'{db.get_notebook_abs_path(self.rel_path)}'")
+                f"Running: '{db.get_notebook_abs_path(self.rel_path)}'")
 
             all_args = {f"{name}{suffix}": value
                         for (name, value, suffix) in self.collect_arguments()}
@@ -280,16 +278,18 @@ class LazyNotebook:
         """
         Prints the current state of the notebook.
         """
-        self.ctx.logger.log(f"Notebook: '{self.rel_path}'")
 
-        self.ctx.logger.log("Args:")
+        c = f"Notebook: '{self.rel_path}'"
+        c += "\nArgs:"
         for (a, v) in self.__args.items():
-            self.ctx.logger.log(f"\t'{a}': '{v}'")
+            c += f"\n\t'{a}': '{v}'"
 
-        self.ctx.logger.log("Inputs:")
+        c += "\nInputs:"
         for (a, i) in self.__inputs.items():
-            self.ctx.logger.log(f"\t'{a}': '{i.abs_file_path}'")
+            c += f"\n\t'{a}': '{i.abs_file_path}'"
 
-        self.ctx.logger.log("Outputs:")
+        c += "\nOutputs:"
         for (a, o) in self.__outputs.items():
-            self.ctx.logger.log(f"\t'{a}': '{o.abs_file_path}'")
+            c += f"\n\t'{a}': '{o.abs_file_path}'"
+
+        self.ctx.display.show(c)

@@ -1,12 +1,16 @@
-class LoggerBase():
+from abc import ABC, abstractmethod
+
+
+class LoggerBase(ABC):
     """
     An interface for flow logger.
     Inherit from this class to implement flow logger.
     """
 
+    @abstractmethod
     def log(self, msg: str = ""):
         """
-        Method which will log a message.
+        Logs a message.
         """
         raise NotImplementedError()
 
@@ -18,6 +22,6 @@ class DefaultLogger(LoggerBase):
 
     def log(self, msg: str = ""):
         """
-        Method which will log a message.
+        Logs a message.
         """
         print(msg)
