@@ -34,7 +34,6 @@ class DefaultLogger(LoggerBase):
         """
         Logs info messages.
         """
-        
         assert self.verbosity == "verbose" or self.verbosity == "default", f"Verbosity variable can not be set to: \"{self.verbosity}\", it must be set either \"verbose\" or \"default\"."
 
         if self.verbosity == "verbose" :

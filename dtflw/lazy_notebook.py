@@ -70,6 +70,7 @@ class LazyNotebook:
             If 'source_table' is not given then 'name' is used.
         """
         if name is None or len(name) == 0:
+            self.ctx.logger.error("Input's name cannot be empty.")
             raise ValueError("Input's name cannot be empty.")
 
         input_file_path = file_path
@@ -119,6 +120,7 @@ class LazyNotebook:
             Alias by which the output is registered in Flow. If not specified then 'name' value is used.
         """
         if name is None or len(name) == 0:
+            self.ctx.logger.error("Output's name cannot be empty.")
             raise ValueError("Output's name cannot be empty.")
 
         output_file_path = file_path
@@ -160,12 +162,12 @@ class LazyNotebook:
         Validates if an input/output table is valid.
         """
         for t in tables:
-            self.ctx.logger.log(f"{title} '{t.name}': ")
+            self.ctx.logger.info(f"{title} '{t.name}': ")
             try:
                 t.validate(strict)
-                self.ctx.logger.log(f"\t'{t.abs_file_path}'")
+                self.ctx.logger.info(f"\t'{t.abs_file_path}'")
             except Exception as e:
-                self.ctx.logger.log("Error")
+                self.ctx.logger.error(f"Error: {e}")
                 raise
 
     @staticmethod
@@ -234,11 +236,11 @@ class LazyNotebook:
         )
 
         if is_lazy and not any_output_needs_eval:
-            self.ctx.logger.log(
+            self.ctx.logger.info(
                 f"Skipped run: '{db.get_notebook_abs_path(self.rel_path)}'")
 
         else:
-            self.ctx.logger.log(
+            self.ctx.logger.info(
                 f"Running: '{db.get_notebook_abs_path(self.rel_path)}'")
 
             all_args = {f"{name}{suffix}": value

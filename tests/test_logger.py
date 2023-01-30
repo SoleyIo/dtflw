@@ -32,15 +32,37 @@ class DefaultLoggerTestCase(unittest.TestCase):
         # Assert
         self.assertEqual(output, "")
             
-    def test_info_verbosity_fail(self):
+    def test_info_verbosity_wrong_state_fail(self):
 
         logger = DefaultLogger()
-        logger.verbosity = "control"
+        logger.verbosity = "wrong_state"
+        
+        # Assert
+        with self.assertRaisesRegex(AssertionError, f"Verbosity variable can not be set to: \"{logger.verbosity}\", it must be set either \"verbose\" or \"default\"."):
+            logger.info('')
+        
+    def test_error_verbose(self):
+
+        logger = DefaultLogger()
+        logger.verbosity = "verbose"
         
         out = StringIO()
         sys.stdout = out
-        logger.info('hello world!')
+        logger.error('hello world!')
         output = out.getvalue().strip()
 
         # Assert
-        self.assertEqual(output, "")
+        self.assertEqual(output, "hello world!")
+            
+    def test_error_verbose(self):
+
+        logger = DefaultLogger()
+        logger.verbosity = "default"
+        
+        out = StringIO()
+        sys.stdout = out
+        logger.error('hello world!')
+        output = out.getvalue().strip()
+
+        # Assert
+        self.assertEqual(output, "hello world!")
