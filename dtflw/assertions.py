@@ -15,11 +15,9 @@ def assert_schema_compatible(actual_dtypes, expected_dtypes, is_strict: bool = F
     """
 
     if actual_dtypes is None:
-        #TODO: How should I add the logger.error(msg)
         raise ValueError("actual_dtypes must not be None.")
 
     if expected_dtypes is None:
-        #TODO: How should I add the logger.error(msg)
         raise ValueError("expected_dtypes must not be None.")
 
     df_dtypes = actual_dtypes
@@ -55,5 +53,4 @@ def assert_schema_compatible(actual_dtypes, expected_dtypes, is_strict: bool = F
                 f"Additional columns were present in the table. Columns: {additional_columns}")
 
     if errors:
-        #TODO: How should I add the logger.error(msg)
         raise AssertionError('\n'.join(errors))
