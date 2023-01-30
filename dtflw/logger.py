@@ -6,7 +6,6 @@ class LoggerBase(ABC):
     An interface for flow logger.
     Inherit from this class to implement flow logger.
     """
-    verbosity = "default"
         
     @abstractmethod
     def info(self, msg: str = ""):
@@ -28,12 +27,16 @@ class DefaultLogger(LoggerBase):
     """
     A flow default logger which logs to stdout using `print`.
     """
-        
+    
+    verbosity = "default"
+    
     def info(self, msg: str = ""):
         """
         Logs info messages.
         """
         
+        assert self.verbosity == "verbose" or self.verbosity == "default", f"Verbosity variable can not be set to: \"{self.verbosity}\", it must be set either \"verbose\" or \"default\"."
+
         if self.verbosity == "verbose" :
             print(msg)
         
