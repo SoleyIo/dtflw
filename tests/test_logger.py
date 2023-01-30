@@ -6,13 +6,14 @@ from io import StringIO
 
 class DefaultLoggerTestCase(unittest.TestCase):
 
-    def log(self):
+    def test_info_verbose(self):
 
         logger = DefaultLogger()
-
+        logger.verbosity = "verbose"
+        
         out = StringIO()
         sys.stdout = out
-        logger.log('hello world!')
+        logger.info('hello world!')
         output = out.getvalue().strip()
 
         # Assert
