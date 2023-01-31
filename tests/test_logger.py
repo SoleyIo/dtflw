@@ -83,3 +83,27 @@ class DefaultLoggerTestCase(unittest.TestCase):
 
         # Assert
         self.assertEqual(output, "hello world!")
+
+    def test_msg_no_verbosity_set(self):
+
+        logger = DefaultLogger()
+        
+        out = StringIO()
+        sys.stdout = out
+        logger.info('hello world!')
+        output = out.getvalue().strip()
+
+        # Assert
+        self.assertEqual(output, "")
+
+    def test_error_no_verbosity_set(self):
+
+        logger = DefaultLogger()
+        
+        out = StringIO()
+        sys.stdout = out
+        logger.error('hello world!')
+        output = out.getvalue().strip()
+
+        # Assert
+        self.assertEqual(output, "hello world!")
