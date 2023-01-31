@@ -41,7 +41,7 @@ class OutputTable():
         if self.needs_eval():
             msg = "Expected output not found."
             self.__ctx.logger.error(msg)
-            raise NameError(msg)
+            raise Exception(msg)
 
         df = self.__ctx.storage.read_table(self.abs_file_path)
 

@@ -3,32 +3,47 @@ from abc import ABC, abstractmethod
 
 class LoggerBase(ABC):
     """
-    An interface for flow logger.
-    Inherit from this class to implement flow logger.
+    A base class to implement a Flow logger.
     """
 
     @abstractmethod
-    def info(self, msg: str = ""):
+    def info(self, msg: str):
         """
         Logs an info message.
         """
         raise NotImplementedError()
 
     @abstractmethod
-    def error(self, msg: str = ""):
+    def error(self, msg: str):
         """
         Logs an error message.
         """
         raise NotImplementedError()
 
 
-
 class DefaultLogger(LoggerBase):
     """
-    A flow default logger which logs to stdout using `print`.
+    Default logger which logs to stdout using `print`.
     """
+
     def __init__(self, verbosity: str = "default"):
         self.verbosity = verbosity
+
+    @property
+    def verbosity(self):
+        """
+        Posible values are
+        - "default": log only errors.
+        - "verbose": log errors as well as info messages.
+        """
+        return self.__verbosity
+
+    @verbosity.setter
+    def verbosity(self, value):
+        if value in ("verbose", "default"):
+            self.__verbosity = value
+        else:
+            self.__verbosity = "default"
 
     def __log(self, msg):
         """
@@ -36,16 +51,14 @@ class DefaultLogger(LoggerBase):
         """
         print(msg)
 
-    def info(self, msg: str = ""):
+    def info(self, msg: str):
         """
         Logs an info message.
         """
-        if self.verbosity == "verbose":
+        if self.__verbosity == "verbose":
             self.__log(msg)
-        else:
-            self.verbosity = "default"
 
-    def error(self, msg: str = ""):
+    def error(self, msg: str):
         """
         Logs an error message.
         """

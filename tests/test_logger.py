@@ -2,108 +2,51 @@ import unittest
 from dtflw.logger import DefaultLogger
 import sys
 from io import StringIO
+from ddt import ddt, data, unpack
 
 
+@ddt
 class DefaultLoggerTestCase(unittest.TestCase):
 
-    def test_info_verbose(self):
+    def test_verbosity_set_unknown_value(self):
 
         logger = DefaultLogger()
-        logger.verbosity = "verbose"
-        
+        logger.verbosity = "unknown value"
+
+        self.assertEqual(logger.verbosity, "default")
+
+    @data(
+        ("verbose", "foo", "foo"),
+        ("default", "foo", "")
+    )
+    @unpack
+    def test_info(self, verbosity, info_msg, expected_msg):
+
+        logger = DefaultLogger(verbosity)
+
         out = StringIO()
         sys.stdout = out
-        logger.info('hello world!')
-        output = out.getvalue().strip()
+        logger.info(info_msg)
+
+        actual_msg = out.getvalue().strip()
 
         # Assert
-        self.assertEqual(output, "hello world!")
+        self.assertEqual(actual_msg, expected_msg)
 
-    def test_info_default(self):
+    @data(
+        ("verbose", "foo", "foo"),
+        ("default", "foo", "foo")
+    )
+    @unpack
+    def test_error(self, verbosity, error_msg, expected_msg):
 
-        logger = DefaultLogger()
-        logger.verbosity = "default"
-        
+        logger = DefaultLogger(verbosity)
+
         out = StringIO()
         sys.stdout = out
-        logger.info('hello world!')
-        output = out.getvalue().strip()
+        logger.error(error_msg)
+
+        actual_msg = out.getvalue().strip()
 
         # Assert
-        self.assertEqual(output, "")
-            
-    def test_info_verbosity_unkown_state(self):
-
-        logger = DefaultLogger()
-        logger.verbosity = "unkown_state"
-        
-        out = StringIO()
-        sys.stdout = out
-        logger.info('hello world!')
-        output = out.getvalue().strip()
-
-        # Assert
-        self.assertEqual(output, "")
-        
-    def test_error_verbose(self):
-
-        logger = DefaultLogger()
-        logger.verbosity = "verbose"
-        
-        out = StringIO()
-        sys.stdout = out
-        logger.error('hello world!')
-        output = out.getvalue().strip()
-
-        # Assert
-        self.assertEqual(output, "hello world!")
-        
-    def test_error_default(self):
-
-        logger = DefaultLogger()
-        logger.verbosity = "default"
-        
-        out = StringIO()
-        sys.stdout = out
-        logger.error('hello world!')
-        output = out.getvalue().strip()
-
-        # Assert
-        self.assertEqual(output, "hello world!")
-            
-    def test_error_verbosity_unkown_state(self):
-
-        logger = DefaultLogger()
-        logger.verbosity = "unkown_state"
-        
-        out = StringIO()
-        sys.stdout = out
-        logger.error('hello world!')
-        output = out.getvalue().strip()
-
-        # Assert
-        self.assertEqual(output, "hello world!")
-
-    def test_msg_no_verbosity_set(self):
-
-        logger = DefaultLogger()
-        
-        out = StringIO()
-        sys.stdout = out
-        logger.info('hello world!')
-        output = out.getvalue().strip()
-
-        # Assert
-        self.assertEqual(output, "")
-
-    def test_error_no_verbosity_set(self):
-
-        logger = DefaultLogger()
-        
-        out = StringIO()
-        sys.stdout = out
-        logger.error('hello world!')
-        output = out.getvalue().strip()
-
-        # Assert
-        self.assertEqual(output, "hello world!")
+        self.assertEqual(actual_msg, expected_msg)
