@@ -2,8 +2,8 @@
 _All notable changes to this codebase are documented in this file._
 
 ## [0.0.11] - 30.01.2023
-- Added `logger.info(msg)` and `logger.error(msg)` services for `dtflw.logger.DefaultLogger`
-- Removed `logger.log(msg)`
+- Added `logger.info` and `logger.error` methods.
+- `logger.log` has been removed.
 
 ## [0.0.10] - 23.01.2023
 - Added `dtflw.display.DefaultDisplay` service for interacting with a user in a notebook.
