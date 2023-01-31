@@ -86,11 +86,12 @@ class Flow:
 
         elif isinstance(plugin, NotebookPluginBase):
             if plugin.action_name in self.__nb_plugins:
-                self.__ctx.logger.error(f"Notebook plugin {plugin.action_name} is already installed.")
-                raise ValueError(
-                    f"Notebook plugin {plugin.action_name} is already installed.")
+                msg = f"Notebook plugin {plugin.action_name} is already installed."
+                self.__ctx.logger.error(msg)
+                raise ValueError(msg)
             self.__nb_plugins[plugin.action_name] = plugin
 
         else:
-            self.__ctx.logger.error(f"Unexpected plugin type.")
-            raise ValueError("Unexpected plugin type.")
+            msg = "Unexpected plugin type."
+            self.__ctx.logger.error(msg)
+            raise ValueError(msg)

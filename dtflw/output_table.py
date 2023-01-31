@@ -39,8 +39,9 @@ class OutputTable():
             Do a strict validation on the table, meaning validation will also fail if more columns then expected are found.
         """
         if self.needs_eval():
-            self.__ctx.logger.error("Expected output not found.")
-            raise NameError("Expected output not found.")
+            msg = "Expected output not found."
+            self.__ctx.logger.error(msg)
+            raise NameError(msg)
 
         df = self.__ctx.storage.read_table(self.abs_file_path)
 

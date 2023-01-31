@@ -7,17 +7,19 @@ class LoggerBase(ABC):
     Inherit from this class to implement flow logger.
     """
         
+
+        
     @abstractmethod
     def info(self, msg: str = ""):
         """
-        Logs a message.
+        Logs an info message.
         """
         raise NotImplementedError()
 
     @abstractmethod
     def error(self, msg: str = ""):
         """
-        Logs a message.
+        Logs an error message.
         """
         raise NotImplementedError()
 
@@ -30,18 +32,23 @@ class DefaultLogger(LoggerBase):
     
     verbosity = "default"
     
+    def __log(self, msg):
+        """
+        Logs a message.
+        """
+        print(msg)
+
     def info(self, msg: str = ""):
         """
-        Logs info messages.
+        Logs an info message.
         """
-        assert self.verbosity == "verbose" or self.verbosity == "default", f"Verbosity variable can not be set to: \"{self.verbosity}\", it must be set either \"verbose\" or \"default\"."
-
-        if self.verbosity == "verbose" :
-            print(msg)
-        
+        if self.verbosity == "verbose":
+            self.__log(msg)
+        else:
+            self.verbosity = "default"
 
     def error(self, msg: str = ""):
         """
-        Logs error messages.
+        Logs an error message.
         """
-        print(msg)
+        self.__log(msg)

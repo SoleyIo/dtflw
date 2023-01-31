@@ -40,5 +40,6 @@ class InputTable():
             No used here but added for compatiblity with output_table.validate.
         """
         if self.needs_eval():
-            self.__ctx.logger.error("Required input not found.")
-            raise Exception("Required input not found.")
+            msg = "Required input not found."
+            self.__ctx.logger.error(msg)
+            raise Exception(msg)
