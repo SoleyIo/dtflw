@@ -12,7 +12,6 @@ class Flow:
 
     def __init__(self, ctx: FlowContext):
         if ctx is None:
-            #TODO: How should I add the logger.error(msg)
             raise ValueError("Context cannot be None.")
 
         self.__ctx = ctx

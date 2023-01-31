@@ -70,7 +70,7 @@ class LazyNotebookTestCase(unittest.TestCase):
     def test_input_name_none_fails(self):
 
         with self.assertRaises(ValueError):
-            LazyNotebook("nb", None).input(name=None)
+            LazyNotebook("nb", self._ctx).input(name=None)
 
     @data(
         # Default. Output's abs file path gets resolved from a path of the current notebook.
@@ -131,7 +131,7 @@ class LazyNotebookTestCase(unittest.TestCase):
     def test_output_name_none_fails(self):
 
         with self.assertRaises(ValueError):
-            LazyNotebook("nb", None).output(name=None)
+            LazyNotebook("nb", self._ctx).output(name=None)
 
     @data(
         (True, False, False),
