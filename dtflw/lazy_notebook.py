@@ -170,7 +170,7 @@ class LazyNotebook:
                 self.ctx.logger.info(f"\t'{t.abs_file_path}'")
             except Exception as e:
                 self.ctx.logger.error(f"Error: {e}")
-                raise
+                raise e
 
     @staticmethod
     def __run_notebook(path: str, timeout: int, args: dict, ctx: FlowContext):
