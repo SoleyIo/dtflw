@@ -86,7 +86,8 @@ class Flow:
 
         elif isinstance(plugin, NotebookPluginBase):
             if plugin.action_name in self.__nb_plugins:
-                raise ValueError(f"Notebook plugin {plugin.action_name} is already installed.")
+                raise ValueError(
+                    f"Notebook plugin {plugin.action_name} is already installed.")
             self.__nb_plugins[plugin.action_name] = plugin
 
         else:
