@@ -13,13 +13,6 @@ class LoggerBase(ABC):
         """
         raise NotImplementedError()
 
-    @abstractmethod
-    def error(self, msg: str):
-        """
-        Logs an error message.
-        """
-        raise NotImplementedError()
-
 
 class DefaultLogger(LoggerBase):
     """
@@ -57,9 +50,3 @@ class DefaultLogger(LoggerBase):
         """
         if self.__verbosity == "verbose":
             self.__log(msg)
-
-    def error(self, msg: str):
-        """
-        Logs an error message.
-        """
-        self.__log(msg)

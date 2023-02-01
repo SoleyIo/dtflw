@@ -32,21 +32,3 @@ class DefaultLoggerTestCase(unittest.TestCase):
 
         # Assert
         self.assertEqual(actual_msg, expected_msg)
-
-    @data(
-        ("verbose", "foo", "foo"),
-        ("default", "foo", "foo")
-    )
-    @unpack
-    def test_error(self, verbosity, error_msg, expected_msg):
-
-        logger = DefaultLogger(verbosity)
-
-        out = StringIO()
-        sys.stdout = out
-        logger.error(error_msg)
-
-        actual_msg = out.getvalue().strip()
-
-        # Assert
-        self.assertEqual(actual_msg, expected_msg)

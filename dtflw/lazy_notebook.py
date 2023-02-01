@@ -70,9 +70,7 @@ class LazyNotebook:
             If 'source_table' is not given then 'name' is used.
         """
         if name is None or len(name) == 0:
-            msg = "Input's name cannot be empty."
-            self.ctx.logger.error(msg)
-            raise ValueError(msg)
+            raise ValueError("Input's name cannot be empty.")
 
         input_file_path = file_path
         if input_file_path is None:
@@ -121,9 +119,7 @@ class LazyNotebook:
             Alias by which the output is registered in Flow. If not specified then 'name' value is used.
         """
         if name is None or len(name) == 0:
-            msg = "Output's name cannot be empty."
-            self.ctx.logger.error(msg)
-            raise ValueError(msg)
+            raise ValueError("Output's name cannot be empty.")
 
         output_file_path = file_path
 
@@ -169,7 +165,6 @@ class LazyNotebook:
                 t.validate(strict)
                 self.ctx.logger.info(f"\t'{t.abs_file_path}'")
             except Exception as e:
-                self.ctx.logger.error(f"Error: {e}")
                 raise e
 
     @staticmethod
