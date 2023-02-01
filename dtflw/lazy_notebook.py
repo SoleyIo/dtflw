@@ -161,12 +161,9 @@ class LazyNotebook:
         """
         for t in tables:
             self.ctx.logger.log(f"{title} '{t.name}': ")
-            try:
-                t.validate(strict)
-                self.ctx.logger.log(f"\t'{t.abs_file_path}'")
-            except Exception as e:
-                self.ctx.logger.log("Error")
-                raise
+            
+            t.validate(strict)
+            self.ctx.logger.log(f"\t'{t.abs_file_path}'")
 
     @staticmethod
     def __run_notebook(path: str, timeout: int, args: dict, ctx: FlowContext):
