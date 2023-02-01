@@ -20,13 +20,13 @@ class DefaultLoggerTestCase(unittest.TestCase):
         ("default", "foo", "")
     )
     @unpack
-    def test_info(self, verbosity, info_msg, expected_msg):
+    def test_log(self, verbosity, info_msg, expected_msg):
 
         logger = DefaultLogger(verbosity)
 
         out = StringIO()
         sys.stdout = out
-        logger.info(info_msg)
+        logger.log(info_msg)
 
         actual_msg = out.getvalue().strip()
 

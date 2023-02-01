@@ -160,10 +160,10 @@ class LazyNotebook:
         Validates if an input/output table is valid.
         """
         for t in tables:
-            self.ctx.logger.info(f"{title} '{t.name}': ")
+            self.ctx.logger.log(f"{title} '{t.name}': ")
             try:
                 t.validate(strict)
-                self.ctx.logger.info(f"\t'{t.abs_file_path}'")
+                self.ctx.logger.log(f"\t'{t.abs_file_path}'")
             except Exception as e:
                 raise e
 
@@ -233,11 +233,11 @@ class LazyNotebook:
         )
 
         if is_lazy and not any_output_needs_eval:
-            self.ctx.logger.info(
+            self.ctx.logger.log(
                 f"Skipped run: '{db.get_notebook_abs_path(self.rel_path)}'")
 
         else:
-            self.ctx.logger.info(
+            self.ctx.logger.log(
                 f"Running: '{db.get_notebook_abs_path(self.rel_path)}'")
 
             all_args = {f"{name}{suffix}": value
