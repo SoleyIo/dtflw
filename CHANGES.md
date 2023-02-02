@@ -2,8 +2,8 @@
 _All notable changes to this codebase are documented in this file._
 
 ## [0.1.0] - 02.02.2023
-> We open sorce `dtflw` framework to share our experience of building data pipelines with Databricks.  
-> We think that it might be found useful and inspiring and, we hope that it will serve good.
+> We open sorce `dtflw` framework to share our experience of building Databricks data pipelines.  
+> We think that it might be found useful and inspiring for others and, we hope that it will serve them well.
 >
 > Its initial version is `0.1.0` denoting (major digit is `0`) that its public API may still change any time and should not be considered stable.
 
