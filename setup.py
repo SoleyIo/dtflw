@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="dtflw",
-    version="0.0.11",
+    version="0.1.0",
     author="Soley GmbH",
     author_email="",
     long_description="dtflw is a Python framework for building modular data pipelines based on Databricks dbutils.notebook API.",
