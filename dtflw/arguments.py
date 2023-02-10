@@ -58,9 +58,7 @@ def unpack_inial_values(values):
     if len(values) == 1 and isinstance(values[0], dict):
         return values[0]
     else:
-        # TODO: get values from the bus.
-        # TODO: if a value is not found (None) then raise an error.
-        return {name: None for name in values}
+        return {name: "" for name in values}
 
 
 def initialize_arguments(c, *values):
