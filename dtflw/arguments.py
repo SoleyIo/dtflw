@@ -1,5 +1,6 @@
 import databricks as db
 
+
 class Arg:
 
     NAME_SUFFIX = ""
@@ -53,16 +54,14 @@ class Output(Arg):
         return len(self.value) > 0
 
 
-def unpack_inial_values(values):
-
-    if len(values) == 1 and isinstance(values[0], dict):
-        return values[0]
-    else:
-        return {name: "" for name in values}
-
-
 def initialize_arguments(c, *values):
-    names_and_values = unpack_inial_values(values)
+
+    names_and_values = {}
+    if len(values) == 1 and isinstance(values[0], dict):
+        names_and_values = values[0]
+    else:
+        names_and_values = {name: "" for name in values}
+
     return {name: c.create(name, value) for name, value in names_and_values.items()}
 
 
