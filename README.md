@@ -30,7 +30,7 @@ Here is an example of a Databricks pipeline built using `dtflw`:
 # /Repos/user@company.com/project/main'
 
 from dtflw import init_flow
-from dtflw.io.azure import init_storage
+from dtflw.storage.azure import init_storage
 
 storage = init_storage("account", "container", root_dir="analysis")
 flow = init_flow(storage)
@@ -38,19 +38,19 @@ is_lazy = True
 
 (
     flow.notebook("ingest_data")
-        .input("sales_records_raw", file_path="raw_data/sales_records_*.csv")
+        .input("SalesRecordsRaw", file_path="raw_data/sales_records_*.csv")
         # Bronze
-        .output("sales_records")
+        .output("SalesRecords")
         .run(is_lazy)
 )
 
 (
     flow.notebook("import_data")
-        .input("sales_records")
+        .input("SalesRecords")
         # Silver
-        .output("sales_orders")
-        .output("products")
-        .output("customers")
+        .output("SalesOrders")
+        .output("Products")
+        .output("Customers")
         .run(is_lazy)
 )
 
@@ -59,17 +59,16 @@ is_lazy = True
         .args({
             "year" : "2022"
         })
-        .input("sales_orders")
-        .input("customers")
-        .input("products")
+        .input("SalesOrders")
+        .input("Customers")
+        .input("Products")
         # Gold
-        .output("sales_stats_by_product")
-        .output("sales_stats_by_customer")
+        .output("SalesStatsPerProduct")
+        .output("SalesStatsPerCustomer")
         .run(is_lazy)
 )
 
-sales_stats_by_product_df = storage.read_table(_flow["sales_stats_by_product"])
-sales_stats_by_product_df.display()
+storage.read_table(_flow["SalesStatsPerProduct"]).display()
 ```
 
 File paths of input and output tables are passed to a callee notebook as arguments. [dbutils.widgets API](https://docs.databricks.com/notebooks/widgets.htm) is used to fetch values passed at runtime.
@@ -78,18 +77,19 @@ File paths of input and output tables are passed to a callee notebook as argumen
 # Notebook 
 # /Repos/user@company.com/project/calculate_sales_stats'
 
-# Notice "_in" suffix for inputs
-dbutils.widgets.text("sales_orders_in", "")
-sales_orders_path = dbutils.widgets.get("sales_orders_in")
+from dtflw.arguments import init_inputs, init_outputs
 
-# Notice "_out" suffix for outputs
-dbutils.widgets.text("sales_stats_by_product_out", "")
-sales_stats_by_product_path = dbutils.widgets.get("sales_stats_by_product_out")
+args = init_args("year")
+inputs = init_inputs("SalesOrders", "Customers", "Products")
+outputs = init_outputs("SalesStatsPerProduct", "SalesStatsPerCustomer")
 
+# Load inputs
+sales_orders_df = spark.read.parquet(inputs["SalesOrders"].value)
 # ...
-sales_orders_df = spark.read.parquet(sales_orders_path)
+# Save outputs
+sales_stats_per_product_df.write.mode("overwrite")\
+    .parquet(outputs["SalesStatsPerProduct"].value)
 # ...
-sales_stats_by_product_df.write.mode("overwrite").parquet(sales_stats_by_product_path)
 ```
 
 Additionally, `dtflw` takes care of constructing file paths for output tables. 
@@ -107,14 +107,14 @@ https://account.blob.core.windows.net/container/
     analysis/
         project/
             ingest_data/
-                sales_orders.parquet/
+                SalesRecords.parquet/
             import_data/
-                sales_orders.parquet/
-                products.parquet/
-                customers.parquet/
+                SalesOrders.parquet/
+                Products.parquet/
+                Customers.parquet/
             calculate_sales_stats/
-                sales_stats_by_product_gold.parquet/
-                sales_stats_by_customer_gold.parquet/
+                SalesStatsPerProduct.parquet/
+                SalesStatsPerCustomer.parquet/
 ```
 
 ## Getting Started

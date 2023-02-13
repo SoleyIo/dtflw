@@ -1,6 +1,10 @@
 # Changes
 _All notable changes to this codebase are documented in this file._
 
+## [0.2.0] - 13.02.2023
+- Added functions `init_args`, `init_inputs` and `init_outputs` for initializing arguments in a callee notebook
+using `dbutils.widgets` API.
+
 ## [0.1.0] - 02.02.2023
 > We open source `dtflw` framework to share our experience of building Databricks data pipelines.  
 > We think that it might be found useful and inspiring for others and, we hope that it will serve them well.
