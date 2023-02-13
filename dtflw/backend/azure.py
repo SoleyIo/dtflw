@@ -1,4 +1,4 @@
-from dtflw.io.storage import FileStorageBase
+from dtflw.backend.storage import FileStorageBase
 from pyspark.sql.session import SparkSession
 import dtflw.databricks as db
 

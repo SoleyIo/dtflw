@@ -1,4 +1,4 @@
-import databricks as db
+import dtflw.databricks as db
 
 
 class Arg:

@@ -1,7 +1,7 @@
 from dtflw.flow_context import FlowContext
 from dtflw.flow import Flow
 import dtflw.databricks as db
-from dtflw.io.storage import FileStorageBase
+from dtflw.backend.storage import FileStorageBase
 from dtflw.logger import DefaultLogger, LoggerBase
 from pyspark.sql import SparkSession
 
