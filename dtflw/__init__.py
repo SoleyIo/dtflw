@@ -1,3 +1,4 @@
+import dtflw.arguments as arguments
 from dtflw.flow_context import FlowContext
 from dtflw.flow import Flow
 import dtflw.databricks as db
@@ -23,3 +24,78 @@ def init_flow(storage: FileStorageBase, spark: SparkSession = None, dbutils=None
     ctx = FlowContext(storage, spark, dbutils, logger)
 
     return Flow(ctx)
+
+
+def init_args(*args):
+    """
+    Initializes widgets using `dbutils.widgets.text` for args:
+    ```
+    flow.notebook(...)
+        .args(...)
+    ```
+
+    Parameters
+    ----------
+    *args
+        Option 1:
+            Given as a variable number of non-keyword arguments, e.g. `args = init_args("a", "b", "c")`.
+            All the args will have an empty string as a value.
+        Option 2:
+            Given as a dictionary with default values, e.g. `args = init_args({'a': 42})`.
+            All non-string values will be stringified.
+
+    Returns
+    -------
+    dict[str: Arg]
+    """
+    return arguments.initialize_arguments(arguments.Arg, *args)
+
+
+def init_inputs(*inputs):
+    """
+    Initializes widgets using `dbutils.widgets.text` for input tables:
+    ```
+    flow.notebook(...)
+        .input('Orders')
+    ```
+
+    Parameters
+    ----------
+    *inputs
+        Option 1:
+            Given as a variable number of non-keyword arguments, e.g. `inputs = init_inputs("Orders", "Customers")`.
+            All the inputs will have an empty string as a value.
+        Option 2:
+            Given as a dictionary with default values, e.g. `inputs = init_inputs({'Orders': 'orders.parquet'})`.
+            All non-string values will be stringified.
+
+    Returns
+    -------
+    dict[str: Input]
+    """
+    return arguments.initialize_arguments(arguments.Input, *inputs)
+
+
+def init_outputs(*outputs):
+    """
+    Initializes widgets using `dbutils.widgets.text` for output tables:
+    ```
+    flow.notebook(...)
+        .output('Orders')
+    ```
+
+    Parameters
+    ----------
+    *outputs
+        Option 1:
+            Given as a variable number of non-keyword arguments, e.g. `outputs = init_outputs("Orders", "Customers")`.
+            All the outputs will have an empty string as a value.
+        Option 2:
+            Given as a dictionary with default values, e.g. `outputs = init_outputs({'Orders': 'orders.parquet'})`.
+            All non-string values will be stringified.
+
+    Returns
+    -------
+    dict[str: Output]
+    """
+    return arguments.initialize_arguments(arguments.Output, *outputs)

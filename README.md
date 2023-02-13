@@ -2,18 +2,23 @@
 
 `dtflw` is a Python framework for building modular data pipelines based on [Databricks dbutils.notebook API](https://docs.databricks.com/notebooks/notebook-workflows.html). It was conceived with an intention to facilitate development and maintenance of Databricks data pipelines.
 
-## Why `dtflw`
-[Databricks](https://docs.databricks.com/notebooks/index.html) offers everything necessary to organize and manage code of data pipelines according to different requirements and tastes. Also, it does not impose any specific file structure on a repo of a pipeline neither regulates relationships between data (tables) and code transforming them (notebooks).
+## Why `dtflw`?
+[Databricks](https://docs.databricks.com/notebooks/index.html) offers everything necessary to organize and manage code of data pipelines according to different requirements and tastes. Also, it does not impose any specific  structure on a repo of a pipeline neither regulates relationships between data (tables) and code transforming them (notebooks).
 
 In general, such freedom is an advantage, but with a growing number of notebooks, variety of data and complexity of analysis logic
->_it gets laborious to work with a codebase of a pipeline while debugging, extending or refactoring it._
+>it gets laborious to work with a codebase of a pipeline while debugging, extending or refactoring it.
 
-Among dozens of notebooks of a pipeline and thousands lines of code, `it is difficult to keep in mind which tables a notebooks requires and what tables it produces`. On the other side, when exploring tables (files) on a storage (e.g. Azure Blob, AWS S3), `it is unclear which code wrote those tables`.
+Among dozens of notebooks of a pipeline and thousands lines of code, 
+> it is difficult to keep in mind which tables a notebook requires and what tables it produces. 
 
-The complexity rises even more when a team needs to `maintain many of such pipelines which are not structured according to a single uniform pattern`.
+On the other side, when exploring tables (files) on a storage (e.g. Azure Blob, AWS S3), 
+>it is unclear which code produced those tables.
 
-## How `dtflw` works
-This project identifies `implicit relationships between data and code in a pipeline` as the main reason for increasing complexity.
+The complexity rises even more when a team needs to 
+>maintain numerous pipelines, each structured in its own way.
+
+## How does `dtflw` work?
+This project identifies _implicit relationships between data and code in a pipeline_ as the main reason for increasing complexity.
 
 Therefore, `dtflw` makes relationships between tables and notebooks explicit by building around a simple dataflow model:
 > Each notebook of a pipeline
@@ -76,8 +81,7 @@ File paths of input and output tables are passed to a callee notebook as argumen
 ```python
 # Notebook 
 # /Repos/user@company.com/project/calculate_sales_stats'
-
-from dtflw.arguments import init_inputs, init_outputs
+from dtflw import init_args, init_inputs, init_outputs
 
 args = init_args("year")
 inputs = init_inputs("SalesOrders", "Customers", "Products")
@@ -86,6 +90,7 @@ outputs = init_outputs("SalesStatsPerProduct", "SalesStatsPerCustomer")
 # Load inputs
 sales_orders_df = spark.read.parquet(inputs["SalesOrders"].value)
 # ...
+
 # Save outputs
 sales_stats_per_product_df.write.mode("overwrite")\
     .parquet(outputs["SalesStatsPerProduct"].value)
