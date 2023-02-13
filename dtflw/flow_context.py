@@ -1,7 +1,7 @@
 import typing
 from pyspark.sql.session import SparkSession
 from dtflw.display import DefaultDisplay
-from dtflw.io.storage import FileStorageBase
+from dtflw.storage.fs import FileStorageBase
 from dtflw.events import EventDispatcher
 from dtflw.logger import LoggerBase
 from dtflw.pipeline import PipelineState
