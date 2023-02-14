@@ -239,13 +239,13 @@ class LazyNotebook:
             self.ctx.logger.log(
                 f"Running: '{db.get_notebook_abs_path(self.rel_path)}'")
 
-            all_args = {f"{name}{suffix}": value
+            arguments = {f"{name}{suffix}": value
                         for (name, value, suffix) in self.collect_arguments()}
 
             self.__last_run_result = LazyNotebook.__run_notebook(
                 self.rel_path,
                 self.__timeout,
-                all_args,
+                arguments,
                 self.ctx)
 
         # Check if outputs are valid. Raises an exception if not.
