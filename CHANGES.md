@@ -1,6 +1,9 @@
 # Changes
 _All notable changes to this codebase are documented in this file._
 
+## [0.2.0] - 02.02.2023
+- Module `dtflw.io.storage` renamed to `dtflw.storage.fs`.
+
 ## [0.1.0] - 02.02.2023
 > We open source `dtflw` framework to share our experience of building Databricks data pipelines.  
 > We think that it might be found useful and inspiring for others and, we hope that it will serve them well.

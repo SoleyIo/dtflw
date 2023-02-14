@@ -1,7 +1,6 @@
 from collections import namedtuple
 from unittest.mock import MagicMock, patch
-
-from dtflw.io.storage import FileStorageBase
+from dtflw.storage.fs import FileStorageBase
 
 
 class StorageMock(FileStorageBase):
