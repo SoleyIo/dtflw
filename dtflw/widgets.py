@@ -1,9 +1,9 @@
 import dtflw.databricks as db
 
 
-class Arg:
+class ArgumentWidget:
     """
-    An argument passed to a notebook.
+    A widget of an argument passed to a notebook.
     """
 
     NAME_SUFFIX = ""
@@ -55,9 +55,9 @@ class Arg:
         return cls(*cls._create_widget(name, value, cls.NAME_SUFFIX))
 
 
-class Input(Arg):
+class InputTableWidget(ArgumentWidget):
     """
-    An input table required by a notebook.
+    A widget of an input table required by a notebook.
     """
     NAME_SUFFIX = "_in"
 
@@ -69,9 +69,9 @@ class Input(Arg):
         return len(self.value) > 0
 
 
-class Output(Arg):
+class OutputTableWidget(ArgumentWidget):
     """
-    An output table promissed by a notebook.
+    A widget of an output table promissed by a notebook.
     """
     NAME_SUFFIX = "_out"
 
@@ -83,9 +83,9 @@ class Output(Arg):
         return len(self.value) > 0
 
 
-def initialize_arguments(argument_class, *values):
+def create_widgets(widget_type, *values):
     """
-    Initializes widgets using `dbutils.widgets.text`. Parameter `argument_calss` can be `Arg`, `Input` or `Output`.
+    Creates widgets using `dbutils.widgets.text`.
     """
 
     names_and_values = {}
@@ -94,4 +94,4 @@ def initialize_arguments(argument_class, *values):
     else:
         names_and_values = {name: "" for name in values}
 
-    return {name: argument_class.create(name, value) for name, value in names_and_values.items()}
+    return {name: widget_type.create(name, value) for name, value in names_and_values.items()}

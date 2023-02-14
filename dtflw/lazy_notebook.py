@@ -6,7 +6,7 @@ import typing
 from dtflw.flow_context import FlowContext
 from dtflw.input_table import InputTable
 from dtflw.output_table import OutputTable
-import dtflw.arguments as arguments
+import dtflw.widgets as widgets
 
 
 class LazyNotebook:
@@ -164,12 +164,12 @@ class LazyNotebook:
             self.ctx.logger.log(f"\t'{t.abs_file_path}'")
 
     @staticmethod
-    def __run_notebook(path: str, timeout: int, args: dict, ctx: FlowContext):
+    def __run_notebook(path: str, timeout: int, arguments: dict, ctx: FlowContext):
         """
         Runs the current notebook.
         This method gets overriden in unit tests.
         """
-        return ctx.dbutils.notebook.run(path, timeout, args)
+        return ctx.dbutils.notebook.run(path, timeout, arguments)
 
     def collect_arguments(self):
         """
@@ -181,18 +181,18 @@ class LazyNotebook:
         """
 
         args = [
-            (name, value, arguments.Arg.NAME_SUFFIX)
+            (name, value, widgets.ArgumentWidget.NAME_SUFFIX)
             for (name, value) in self.__args.items()
         ]
 
         args.extend([
-            (i.name, i.abs_file_path, arguments.Input.NAME_SUFFIX)
+            (i.name, i.abs_file_path, widgets.InputTableWidget.NAME_SUFFIX)
             for i
             in self.__inputs.values()
         ])
 
         args.extend([
-            (o.name, o.abs_file_path, arguments.Output.NAME_SUFFIX)
+            (o.name, o.abs_file_path, widgets.OutputTableWidget.NAME_SUFFIX)
             for o
             in self.__outputs.values()
         ])
