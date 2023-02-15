@@ -2,18 +2,23 @@
 
 `dtflw` is a Python framework for building modular data pipelines based on [Databricks dbutils.notebook API](https://docs.databricks.com/notebooks/notebook-workflows.html). It was conceived with an intention to facilitate development and maintenance of Databricks data pipelines.
 
-## Why `dtflw`
-[Databricks](https://docs.databricks.com/notebooks/index.html) offers everything necessary to organize and manage code of data pipelines according to different requirements and tastes. Also, it does not impose any specific file structure on a repo of a pipeline neither regulates relationships between data (tables) and code transforming them (notebooks).
+## Why `dtflw`?
+[Databricks](https://docs.databricks.com/notebooks/index.html) offers everything necessary to organize and manage code of data pipelines according to different requirements and tastes. Also, it does not impose any specific  structure on a repo of a pipeline neither regulates relationships between data (tables) and code transforming them (notebooks).
 
 In general, such freedom is an advantage, but with a growing number of notebooks, variety of data and complexity of analysis logic
->_it gets laborious to work with a codebase of a pipeline while debugging, extending or refactoring it._
+>it gets laborious to work with a codebase of a pipeline while debugging, extending or refactoring it.
 
-Among dozens of notebooks of a pipeline and thousands lines of code, `it is difficult to keep in mind which tables a notebooks requires and what tables it produces`. On the other side, when exploring tables (files) on a storage (e.g. Azure Blob, AWS S3), `it is unclear which code wrote those tables`.
+Among dozens of notebooks of a pipeline and thousands lines of code, 
+> it is difficult to keep in mind which tables a notebook requires and what tables it produces. 
 
-The complexity rises even more when a team needs to `maintain many of such pipelines which are not structured according to a single uniform pattern`.
+On the other side, when exploring tables (files) on a storage (e.g. Azure Blob, AWS S3), 
+>it is unclear which code produced those tables.
 
-## How `dtflw` works
-This project identifies `implicit relationships between data and code in a pipeline` as the main reason for increasing complexity.
+The complexity rises even more when a team needs to 
+>maintain numerous pipelines, each structured in its own way.
+
+## How does `dtflw` work?
+This project identifies _implicit relationships between data and code in a pipeline_ as the main reason for increasing complexity.
 
 Therefore, `dtflw` makes relationships between tables and notebooks explicit by building around a simple dataflow model:
 > Each notebook of a pipeline
@@ -30,7 +35,7 @@ Here is an example of a Databricks pipeline built using `dtflw`:
 # /Repos/user@company.com/project/main'
 
 from dtflw import init_flow
-from dtflw.io.azure import init_storage
+from dtflw.storage.azure import init_storage
 
 storage = init_storage("account", "container", root_dir="analysis")
 flow = init_flow(storage)
@@ -38,19 +43,19 @@ is_lazy = True
 
 (
     flow.notebook("ingest_data")
-        .input("sales_records_raw", file_path="raw_data/sales_records_*.csv")
+        .input("SalesRecordsRaw", file_path="raw_data/sales_records_*.csv")
         # Bronze
-        .output("sales_records")
+        .output("SalesRecords")
         .run(is_lazy)
 )
 
 (
     flow.notebook("import_data")
-        .input("sales_records")
+        .input("SalesRecords")
         # Silver
-        .output("sales_orders")
-        .output("products")
-        .output("customers")
+        .output("SalesOrders")
+        .output("Products")
+        .output("Customers")
         .run(is_lazy)
 )
 
@@ -59,17 +64,16 @@ is_lazy = True
         .args({
             "year" : "2022"
         })
-        .input("sales_orders")
-        .input("customers")
-        .input("products")
+        .input("SalesOrders")
+        .input("Customers")
+        .input("Products")
         # Gold
-        .output("sales_stats_by_product")
-        .output("sales_stats_by_customer")
+        .output("SalesStatsPerProduct")
+        .output("SalesStatsPerCustomer")
         .run(is_lazy)
 )
 
-sales_stats_by_product_df = storage.read_table(_flow["sales_stats_by_product"])
-sales_stats_by_product_df.display()
+storage.read_table(_flow["SalesStatsPerProduct"]).display()
 ```
 
 File paths of input and output tables are passed to a callee notebook as arguments. [dbutils.widgets API](https://docs.databricks.com/notebooks/widgets.htm) is used to fetch values passed at runtime.
@@ -77,19 +81,20 @@ File paths of input and output tables are passed to a callee notebook as argumen
 ```python
 # Notebook 
 # /Repos/user@company.com/project/calculate_sales_stats'
+from dtflw import init_args, init_inputs, init_outputs
 
-# Notice "_in" suffix for inputs
-dbutils.widgets.text("sales_orders_in", "")
-sales_orders_path = dbutils.widgets.get("sales_orders_in")
+args = init_args("year")
+inputs = init_inputs("SalesOrders", "Customers", "Products")
+outputs = init_outputs("SalesStatsPerProduct", "SalesStatsPerCustomer")
 
-# Notice "_out" suffix for outputs
-dbutils.widgets.text("sales_stats_by_product_out", "")
-sales_stats_by_product_path = dbutils.widgets.get("sales_stats_by_product_out")
-
+# Load inputs
+sales_orders_df = spark.read.parquet(inputs["SalesOrders"].value)
 # ...
-sales_orders_df = spark.read.parquet(sales_orders_path)
+
+# Save outputs
+sales_stats_per_product_df.write.mode("overwrite")\
+    .parquet(outputs["SalesStatsPerProduct"].value)
 # ...
-sales_stats_by_product_df.write.mode("overwrite").parquet(sales_stats_by_product_path)
 ```
 
 Additionally, `dtflw` takes care of constructing file paths for output tables. 
@@ -107,14 +112,14 @@ https://account.blob.core.windows.net/container/
     analysis/
         project/
             ingest_data/
-                sales_orders.parquet/
+                SalesRecords.parquet/
             import_data/
-                sales_orders.parquet/
-                products.parquet/
-                customers.parquet/
+                SalesOrders.parquet/
+                Products.parquet/
+                Customers.parquet/
             calculate_sales_stats/
-                sales_stats_by_product_gold.parquet/
-                sales_stats_by_customer_gold.parquet/
+                SalesStatsPerProduct.parquet/
+                SalesStatsPerCustomer.parquet/
 ```
 
 ## Getting Started

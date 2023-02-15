@@ -68,3 +68,23 @@ def mock_spark(spark_class_mock: MagicMock, df_dtypes=[("id", "bigint")]):
 
     spark_mock.read.parquet = spark_read_parquet
     return spark_mock
+
+
+class DButilsMock:
+    class WidgetsMock:
+        def __init__(self):
+            self._widget_values = {}
+
+        def text(self, name, value, title):
+
+            if value is None:
+                raise Exception(
+                    "Mimics the behavior in a notebook: 'dbutils.widgets.text(..., None, ...)' raises a 'java.lang.NullPointerException'.")
+
+            self._widget_values[name] = value
+
+        def get(self, name):
+            return self._widget_values[name]
+
+    def __init__(self) -> None:
+        self.widgets = self.WidgetsMock()

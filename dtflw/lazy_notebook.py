@@ -6,6 +6,7 @@ import typing
 from dtflw.flow_context import FlowContext
 from dtflw.input_table import InputTable
 from dtflw.output_table import OutputTable
+import dtflw.arguments as arguments
 
 
 class LazyNotebook:
@@ -18,9 +19,6 @@ class LazyNotebook:
         def __init__(self, name: str, abs_file_path: str, cols: list, ctx: FlowContext, alias: str):
             super().__init__(name, abs_file_path, cols, ctx)
             self.alias = alias
-
-    OUTPUT_TABLE_SUFFIX = "_out"
-    INPUT_TABLE_SUFFIX = "_in"
 
     def __init__(self, rel_path: str, ctx: FlowContext):
         self.__rel_path = rel_path
@@ -161,37 +159,40 @@ class LazyNotebook:
         """
         for t in tables:
             self.ctx.logger.log(f"{title} '{t.name}': ")
-            
+
             t.validate(strict)
             self.ctx.logger.log(f"\t'{t.abs_file_path}'")
 
     @staticmethod
-    def __run_notebook(path: str, timeout: int, args: dict, ctx: FlowContext):
+    def __run_notebook(path: str, timeout: int, arguments: dict, ctx: FlowContext):
         """
         Runs the current notebook.
         This method gets overriden in unit tests.
         """
-        return ctx.dbutils.notebook.run(path, timeout, args)
+        return ctx.dbutils.notebook.run(path, timeout, arguments)
 
     def collect_arguments(self):
         """
-        Collects all the arguments: regular arguments (args) as well as inputs and outputs.
+        Collects arguments for this notebook: regular arguments (args) as well as inputs and outputs.
 
         Returns
         -------
-        A list of arguments: [(name: str, value: str, suffix: str)] 
+        [(name: str, value: str, suffix: str),] 
         """
 
-        args = [(name, value, "") for (name, value) in self.__args.items()]
+        args = [
+            (name, value, arguments.Argument.NAME_SUFFIX)
+            for (name, value) in self.__args.items()
+        ]
 
         args.extend([
-            (i.name, i.abs_file_path, LazyNotebook.INPUT_TABLE_SUFFIX)
+            (i.name, i.abs_file_path, arguments.Input.NAME_SUFFIX)
             for i
             in self.__inputs.values()
         ])
 
         args.extend([
-            (o.name, o.abs_file_path, LazyNotebook.OUTPUT_TABLE_SUFFIX)
+            (o.name, o.abs_file_path, arguments.Output.NAME_SUFFIX)
             for o
             in self.__outputs.values()
         ])
@@ -238,13 +239,13 @@ class LazyNotebook:
             self.ctx.logger.log(
                 f"Running: '{db.get_notebook_abs_path(self.rel_path)}'")
 
-            all_args = {f"{name}{suffix}": value
+            arguments = {f"{name}{suffix}": value
                         for (name, value, suffix) in self.collect_arguments()}
 
             self.__last_run_result = LazyNotebook.__run_notebook(
                 self.rel_path,
                 self.__timeout,
-                all_args,
+                arguments,
                 self.ctx)
 
         # Check if outputs are valid. Raises an exception if not.
