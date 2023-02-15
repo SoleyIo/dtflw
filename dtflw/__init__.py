@@ -1,4 +1,4 @@
-import dtflw.widgets as widgets
+import dtflw.arguments as arguments
 from dtflw.flow_context import FlowContext
 from dtflw.flow import Flow
 import dtflw.databricks as db
@@ -28,11 +28,7 @@ def init_flow(storage: FileStorageBase, spark: SparkSession = None, dbutils=None
 
 def init_args(*args):
     """
-    Initializes widgets using `dbutils.widgets.text` for args:
-    ```
-    flow.notebook(...)
-        .args(...)
-    ```
+    Initializes args
 
     Parameters
     ----------
@@ -48,16 +44,12 @@ def init_args(*args):
     -------
     dict[str: Arg]
     """
-    return widgets.create_widgets(widgets.ArgumentWidget, *args)
+    return arguments.initialize_arguments(arguments.Argument, *args)
 
 
 def init_inputs(*inputs):
     """
-    Initializes widgets using `dbutils.widgets.text` for input tables:
-    ```
-    flow.notebook(...)
-        .input('Orders')
-    ```
+    Initializes input tables.
 
     Parameters
     ----------
@@ -73,16 +65,12 @@ def init_inputs(*inputs):
     -------
     dict[str: Input]
     """
-    return widgets.create_widgets(widgets.InputTableWidget, *inputs)
+    return arguments.initialize_arguments(arguments.Input, *inputs)
 
 
 def init_outputs(*outputs):
     """
-    Initializes widgets using `dbutils.widgets.text` for output tables:
-    ```
-    flow.notebook(...)
-        .output('Orders')
-    ```
+    Initializes output tables.
 
     Parameters
     ----------
@@ -98,4 +86,4 @@ def init_outputs(*outputs):
     -------
     dict[str: Output]
     """
-    return widgets.create_widgets(widgets.OutputTableWidget, *outputs)
+    return arguments.initialize_arguments(arguments.Output, *outputs)

@@ -6,7 +6,7 @@ import typing
 from dtflw.flow_context import FlowContext
 from dtflw.input_table import InputTable
 from dtflw.output_table import OutputTable
-import dtflw.widgets as widgets
+import dtflw.arguments as arguments
 
 
 class LazyNotebook:
@@ -173,26 +173,26 @@ class LazyNotebook:
 
     def collect_arguments(self):
         """
-        Collects all the arguments: regular arguments (args) as well as inputs and outputs.
+        Collects arguments for this notebook: regular arguments (args) as well as inputs and outputs.
 
         Returns
         -------
-        A list of arguments: [(name: str, value: str, suffix: str)] 
+        [(name: str, value: str, suffix: str),] 
         """
 
         args = [
-            (name, value, widgets.ArgumentWidget.NAME_SUFFIX)
+            (name, value, arguments.Argument.NAME_SUFFIX)
             for (name, value) in self.__args.items()
         ]
 
         args.extend([
-            (i.name, i.abs_file_path, widgets.InputTableWidget.NAME_SUFFIX)
+            (i.name, i.abs_file_path, arguments.Input.NAME_SUFFIX)
             for i
             in self.__inputs.values()
         ])
 
         args.extend([
-            (o.name, o.abs_file_path, widgets.OutputTableWidget.NAME_SUFFIX)
+            (o.name, o.abs_file_path, arguments.Output.NAME_SUFFIX)
             for o
             in self.__outputs.values()
         ])

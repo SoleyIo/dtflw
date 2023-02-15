@@ -1,17 +1,17 @@
 import unittest
-from dtflw.widgets import create_widgets, ArgumentWidget, InputTableWidget, OutputTableWidget
+from dtflw.arguments import initialize_arguments, Argument, Input, Output
 from unittest.mock import patch
 import tests.utils as utils
 from ddt import ddt, data, unpack
 
 
 @ddt
-class WidgetsTestCase(unittest.TestCase):
+class ArgumentsTestCase(unittest.TestCase):
 
     @data(
-        (ArgumentWidget, True),
-        (InputTableWidget, False),
-        (OutputTableWidget, False)
+        (Argument, True),
+        (Input, False),
+        (Output, False)
     )
     @unpack
     @patch("dtflw.databricks.get_dbutils")
@@ -19,7 +19,7 @@ class WidgetsTestCase(unittest.TestCase):
 
         get_dbutils_mock.return_value = utils.DButilsMock()
 
-        actual = create_widgets(clazz, "foo")
+        actual = initialize_arguments(clazz, "foo")
 
         self.assertDictEqual(
             {a.name: a.value for name, a in actual.items()},
@@ -28,13 +28,13 @@ class WidgetsTestCase(unittest.TestCase):
 
         self.assertEqual(actual["foo"].has_value, expected_has_value)
 
-    @data(ArgumentWidget, InputTableWidget, OutputTableWidget)
+    @data(Argument, Input, Output)
     @patch("dtflw.databricks.get_dbutils")
     def test_initialize_arguments_non_empty_values(self, clazz, get_dbutils_mock):
 
         get_dbutils_mock.return_value = utils.DButilsMock()
 
-        actual = create_widgets(
+        actual = initialize_arguments(
             clazz,
             {"a": "data.parquet", "b": 42, "c": None, "d": True}
         )

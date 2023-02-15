@@ -1,9 +1,9 @@
 import dtflw.databricks as db
 
 
-class ArgumentWidget:
+class Argument:
     """
-    A widget of an argument passed to a notebook.
+    An argument passed to a notebook.
     """
 
     NAME_SUFFIX = ""
@@ -38,8 +38,8 @@ class ArgumentWidget:
     def __repr__(self):
         return self.value
 
-    @classmethod
-    def _create_widget(cls, name, value, widget_name_suffix):
+    @staticmethod
+    def _get_name_and_value(name, value, widget_name_suffix):
         widget_name = f"{name}{widget_name_suffix}"
         # If a widget already exists then the line below has not effect.
         dbutils = db.get_dbutils()
@@ -52,12 +52,12 @@ class ArgumentWidget:
         """
         Factory method.
         """
-        return cls(*cls._create_widget(name, value, cls.NAME_SUFFIX))
+        return cls(*cls._get_name_and_value(name, value, cls.NAME_SUFFIX))
 
 
-class InputTableWidget(ArgumentWidget):
+class Input(Argument):
     """
-    A widget of an input table required by a notebook.
+    An input table required by a notebook.
     """
     NAME_SUFFIX = "_in"
 
@@ -69,9 +69,9 @@ class InputTableWidget(ArgumentWidget):
         return len(self.value) > 0
 
 
-class OutputTableWidget(ArgumentWidget):
+class Output(Argument):
     """
-    A widget of an output table promissed by a notebook.
+    An output table promissed by a notebook.
     """
     NAME_SUFFIX = "_out"
 
@@ -83,9 +83,18 @@ class OutputTableWidget(ArgumentWidget):
         return len(self.value) > 0
 
 
-def create_widgets(widget_type, *values):
+def initialize_arguments(argument_type, *values):
     """
-    Creates widgets using `dbutils.widgets.text`.
+    Initializes notebook arguments of a certain type given by `argument_type`.
+
+    Parameters
+    ----------
+    argument_type: Arg | Input | Output
+    *values: initial values.
+
+    Returns
+    -------
+    dict[str, Arg | Input | Output]
     """
 
     names_and_values = {}
@@ -94,4 +103,4 @@ def create_widgets(widget_type, *values):
     else:
         names_and_values = {name: "" for name in values}
 
-    return {name: widget_type.create(name, value) for name, value in names_and_values.items()}
+    return {name: argument_type.create(name, value) for name, value in names_and_values.items()}
