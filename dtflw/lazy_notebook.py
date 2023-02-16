@@ -7,6 +7,7 @@ from dtflw.flow_context import FlowContext
 from dtflw.input_table import InputTable
 from dtflw.output_table import OutputTable
 import dtflw.arguments as arguments
+import dtflw.com as com
 
 
 class LazyNotebook:
@@ -171,33 +172,51 @@ class LazyNotebook:
         """
         return ctx.dbutils.notebook.run(path, timeout, arguments)
 
-    def collect_arguments(self):
+    def share_arguments(self) -> None:
         """
-        Collects arguments for this notebook: regular arguments (args) as well as inputs and outputs.
-
-        Returns
-        -------
-        [(name: str, value: str, suffix: str),] 
+        Makes values of args, inputs and outputs available in the callee notebook.
+        Retrive them with `init_args`, `init_inputs` and `init_outputs` respectively.
         """
+        com.NotebooksChannel().share_arguments(
+            db.get_notebook_abs_path(self.rel_path),
+            self.__collect_arguments()
+        )
 
-        args = [
-            (name, value, arguments.Argument.NAME_SUFFIX)
-            for (name, value) in self.__args.items()
-        ]
+    def __collect_arguments(self):
+        """
+        Returns a dict of all the arguments in the format below:
 
-        args.extend([
-            (i.name, i.abs_file_path, arguments.Input.NAME_SUFFIX)
-            for i
-            in self.__inputs.values()
-        ])
+        "{name}{name_suffix}": {
+            'name': name,
+            'value': value,
+            'name_suffix': name_suffix
+        }
+        """
+        return {
+            f"{name}{name_suffix}": {
+                "name": name,
+                "value": value,
+                "name_suffix": name_suffix
+            }
 
-        args.extend([
-            (o.name, o.abs_file_path, arguments.Output.NAME_SUFFIX)
-            for o
-            in self.__outputs.values()
-        ])
-
-        return args
+            for name, value, name_suffix in
+            [
+                *[
+                    (name, value, arguments.Argument.NAME_SUFFIX)
+                    for (name, value) in self.__args.items()
+                ],
+                *[
+                    (i.name, i.abs_file_path, arguments.Input.NAME_SUFFIX)
+                    for i
+                    in self.__inputs.values()
+                ],
+                *[
+                    (o.name, o.abs_file_path, arguments.Output.NAME_SUFFIX)
+                    for o
+                    in self.__outputs.values()
+                ]
+            ]
+        }
 
     def run(self, is_lazy: bool = False, strict_validation: bool = False):
         """
@@ -222,7 +241,10 @@ class LazyNotebook:
         -------
         Argument of the `dbutils.notebook.exit` if exists otherwise `None`.
         """
-        self.ctx.events.fire(FlowEvents.NOTEBOOK_RUN_REQUESTED, self)
+
+        if not db.is_this_workflow():
+            # If interactive then share arguments for easy debugging of the callee notebook.
+            self.share_arguments()
 
         # Check if inputs are valid. Raises an exception if not.
         self.__validate_tables(self.__inputs.values(), "Input")
@@ -239,8 +261,10 @@ class LazyNotebook:
             self.ctx.logger.log(
                 f"Running: '{db.get_notebook_abs_path(self.rel_path)}'")
 
-            arguments = {f"{name}{suffix}": value
-                        for (name, value, suffix) in self.collect_arguments()}
+            arguments = {
+                full_name: bag["value"]
+                for full_name, bag in self.__collect_arguments().items()
+            }
 
             self.__last_run_result = LazyNotebook.__run_notebook(
                 self.rel_path,
