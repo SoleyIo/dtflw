@@ -1,5 +1,4 @@
 from __future__ import annotations
-from dtflw.events import FlowEvents
 from dtflw.pipeline import NotebookRun
 import dtflw.databricks as db
 import typing

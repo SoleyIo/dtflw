@@ -1,6 +1,5 @@
 import unittest
 from unittest.mock import MagicMock, patch
-from dtflw.events import EventHandlerBase, FlowEvents
 from dtflw.logger import DefaultLogger
 from ddt import ddt, data, unpack
 from dtflw.lazy_notebook import LazyNotebook
