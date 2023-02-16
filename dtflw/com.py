@@ -85,20 +85,27 @@ class NotebooksChannel:
     def __init__(self):
         self.__bus = MessageBus()
 
-    def share_arguments(self, notebook_abs_path: str, arguments):
-        """
-        Shares `arguments` for a given `notebook_abs_path`.
-        """
-        self.__bus.share(
-            channel=self.CHANNEL,
-            topic=notebook_abs_path,
-            message={"arguments": arguments}
-        )
+    def __share(self, notebook_abs_path, message):
+        self.__bus.share(self.CHANNEL, notebook_abs_path, message)
 
-    def try_get_arguments(self, notebook_abs_path: str):
-        """
-        Returns arguments for a `notebook_abs_path` is such message exists.
-        Otherwise, returns an empty dict.
-        """
-        msg = self.__bus.try_get(self.CHANNEL, notebook_abs_path, {})
-        return msg["arguments"] if "arguments" in msg else msg
+    def share_args(self, notebook_abs_path: str, args):
+        self.__share(notebook_abs_path, {"args": args})
+
+    def share_inputs(self, notebook_abs_path: str, inputs):
+        self.__share(notebook_abs_path, {"inputs": inputs})
+
+    def share_outputs(self, notebook_abs_path: str, outputs):
+        self.__share(notebook_abs_path, {"outputs": outputs})
+
+    def __get(self, notebook_abs_path: str, sub_topic: str):
+        message = self.__bus.try_get(self.CHANNEL, notebook_abs_path, {})
+        return message[sub_topic] if sub_topic in message else {}
+
+    def get_args(self, notebook_abs_path: str):
+        return self.__get(notebook_abs_path, "args")
+
+    def get_inputs(self, notebook_abs_path: str):
+        return self.__get(notebook_abs_path, "inputs")
+
+    def get_outputs(self, notebook_abs_path: str):
+        return self.__get(notebook_abs_path, "outputs")

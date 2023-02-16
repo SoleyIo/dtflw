@@ -1,4 +1,5 @@
 import dtflw.databricks as db
+import dtflw.com as com
 
 
 class Argument:
@@ -38,9 +39,9 @@ class Argument:
     def __repr__(self):
         return self.value
 
-    @staticmethod
-    def _get_name_and_value(name, value, widget_name_suffix):
-        widget_name = f"{name}{widget_name_suffix}"
+    @classmethod
+    def _update_name_and_value(cls, name, value):
+        widget_name = cls.get_full_name(name)
         # If a widget already exists then the line below has not effect.
         dbutils = db.get_dbutils()
         dbutils.widgets.text(widget_name, str(value), widget_name)
@@ -48,11 +49,32 @@ class Argument:
         return name, dbutils.widgets.get(widget_name)
 
     @classmethod
-    def create(cls, name, value):
-        """
-        Factory method.
-        """
-        return cls(*cls._get_name_and_value(name, value, cls.NAME_SUFFIX))
+    def create(cls, *arguments):
+
+        names_and_values = {}
+        if len(arguments) == 1 and isinstance(arguments[0], dict):
+            names_and_values = arguments[0]
+        else:
+            names_and_values = {name: "" for name in arguments}
+            shared_values = cls._get_shared_values()
+
+            names_and_values = {**names_and_values, ** shared_values}
+
+        return {
+            name: cls(*cls._update_name_and_value(name, value))
+            for name, value
+            in names_and_values.items()
+        }
+
+    @classmethod
+    def _get_shared_values(cls):
+        return com.NotebooksChannel().get_args(
+            db.get_this_notebook_abs_path()
+        )
+
+    @classmethod
+    def get_full_name(cls, name: str):
+        return f"{name}{cls.NAME_SUFFIX}"
 
 
 class Input(Argument):
@@ -68,6 +90,12 @@ class Input(Argument):
         """
         return len(self.value) > 0
 
+    @classmethod
+    def _get_shared_values(cls):
+        return com.NotebooksChannel().get_inputs(
+            db.get_this_notebook_abs_path()
+        )
+
 
 class Output(Argument):
     """
@@ -82,25 +110,8 @@ class Output(Argument):
         """
         return len(self.value) > 0
 
-
-def initialize_arguments(argument_type, *values):
-    """
-    Initializes notebook arguments of a certain type given by `argument_type`.
-
-    Parameters
-    ----------
-    argument_type: Arg | Input | Output
-    *values: initial values.
-
-    Returns
-    -------
-    dict[str, Arg | Input | Output]
-    """
-
-    names_and_values = {}
-    if len(values) == 1 and isinstance(values[0], dict):
-        names_and_values = values[0]
-    else:
-        names_and_values = {name: "" for name in values}
-
-    return {name: argument_type.create(name, value) for name, value in names_and_values.items()}
+    @classmethod
+    def _get_shared_values(cls):
+        return com.NotebooksChannel().get_outputs(
+            db.get_this_notebook_abs_path()
+        )

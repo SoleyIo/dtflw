@@ -5,7 +5,7 @@ import typing
 from dtflw.flow_context import FlowContext
 from dtflw.input_table import InputTable
 from dtflw.output_table import OutputTable
-import dtflw.arguments as arguments
+import dtflw.arguments as a
 import dtflw.com as com
 
 
@@ -174,48 +174,25 @@ class LazyNotebook:
     def share_arguments(self) -> None:
         """
         Makes values of args, inputs and outputs available in the callee notebook.
-        Retrive them with `init_args`, `init_inputs` and `init_outputs` respectively.
+        Retrieve them with `init_args`, `init_inputs` and `init_outputs` respectively.
         """
-        com.NotebooksChannel().share_arguments(
+
+        ch = com.NotebooksChannel()
+
+        ch.share_args(
             db.get_notebook_abs_path(self.rel_path),
-            self.__collect_arguments()
+            self.get_args()
         )
 
-    def __collect_arguments(self):
-        """
-        Returns a dict of all the arguments in the format below:
+        ch.share_inputs(
+            db.get_notebook_abs_path(self.rel_path),
+            {name: i.abs_file_path for name, i in self.get_inputs().items()}
+        )
 
-        "{name}{name_suffix}": {
-            'name': name,
-            'value': value,
-            'name_suffix': name_suffix
-        }
-        """
-        return {
-            f"{name}{name_suffix}": {
-                "name": name,
-                "value": value,
-                "name_suffix": name_suffix
-            }
-
-            for name, value, name_suffix in
-            [
-                *[
-                    (name, value, arguments.Argument.NAME_SUFFIX)
-                    for (name, value) in self.__args.items()
-                ],
-                *[
-                    (i.name, i.abs_file_path, arguments.Input.NAME_SUFFIX)
-                    for i
-                    in self.__inputs.values()
-                ],
-                *[
-                    (o.name, o.abs_file_path, arguments.Output.NAME_SUFFIX)
-                    for o
-                    in self.__outputs.values()
-                ]
-            ]
-        }
+        ch.share_outputs(
+            db.get_notebook_abs_path(self.rel_path),
+            {name: o.abs_file_path for name, o in self.get_outputs().items()}
+        )
 
     def run(self, is_lazy: bool = False, strict_validation: bool = False):
         """
@@ -261,15 +238,17 @@ class LazyNotebook:
                 f"Running: '{db.get_notebook_abs_path(self.rel_path)}'")
 
             arguments = {
-                full_name: bag["value"]
-                for full_name, bag in self.__collect_arguments().items()
+                **{a.Argument.get_full_name(name): value for name, value in self.get_args().items()},
+                **{a.Input.get_full_name(name): i.abs_file_path for name, i in self.get_inputs().items()},
+                **{a.Output.get_full_name(name): o.abs_file_path for name, o in self.get_outputs().items()}
             }
 
             self.__last_run_result = LazyNotebook.__run_notebook(
                 self.rel_path,
                 self.__timeout,
                 arguments,
-                self.ctx)
+                self.ctx
+            )
 
         # Check if outputs are valid. Raises an exception if not.
         self.__validate_tables(

@@ -7,53 +7,6 @@ from ddt import ddt, data, unpack
 
 
 @ddt
-class MessagingTestCase(unittest.TestCase):
-
-    @patch("dtflw.databricks.get_spark_session")
-    def test_share_arguments(self, get_session_mock):
-
-        # Arrange
-        get_session_mock.return_value = utils.SparkSessionMock()
-        ch = com.NotebooksChannel()
-
-        arguments = {
-            "foo": {
-                "name": "foo",
-                "value": "42",
-                "name_suffix": a.Argument.NAME_SUFFIX
-            },
-            "A_in": {
-                "name": "A",
-                "value": "data/A.parquet",
-                "name_suffix": a.Input.NAME_SUFFIX
-            },
-            "B_out": {
-                "name": "B",
-                "value": "data/B.parquet",
-                "name_sufffx": a.Output.NAME_SUFFIX
-            }
-        }
-        nb_abs_path = "/Repos/user@a.b/project/nb"
-
-        # Act
-        ch.share_arguments(nb_abs_path, arguments)
-
-        # Assert
-        actual = ch.try_get_arguments(nb_abs_path)
-        self.assertDictEqual(arguments, actual)
-
-    @patch("dtflw.databricks.get_spark_session")
-    def test_try_get_arguments_default(self, get_session_mock):
-
-        get_session_mock.return_value = utils.SparkSessionMock()
-        ch = com.NotebooksChannel()
-
-        actual = ch.try_get_arguments("nb")
-
-        self.assertDictEqual({}, actual)
-
-
-@ddt
 class MessageBusTestCase(unittest.TestCase):
 
     @patch("dtflw.databricks.get_spark_session")
