@@ -71,6 +71,9 @@ def mock_spark(spark_class_mock: MagicMock, df_dtypes=[("id", "bigint")]):
 
 
 class DButilsMock:
+    """
+    Mocks certain public API and its behavior of DBUtils.
+    """
     class WidgetsMock:
         def __init__(self):
             self._widget_values = {}
@@ -88,3 +91,23 @@ class DButilsMock:
 
     def __init__(self) -> None:
         self.widgets = self.WidgetsMock()
+
+
+class SparkSessionMock:
+    """
+    Mocks certain public API and its behavior of SparkSession.
+    """
+    class RuntimeConfigMock:
+        def __init__(self):
+            self._conf = {}
+
+        def get(self, key):
+            if key not in self._conf:
+                raise Exception("java.util.NoSuchElementException")
+            return self._conf[key]
+
+        def set(self, key, value):
+            self._conf[key] = value
+
+    def __init__(self):
+        self.conf = self.RuntimeConfigMock()

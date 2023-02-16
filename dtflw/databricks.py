@@ -84,3 +84,29 @@ def is_this_workflow() -> bool:
     """
     wf = try_get_context_tag("jobType")
     return wf is not None and wf.lower() == "workflow"
+
+
+def set_runtime_config_property(key: str, value: str):
+    """
+    Wraps `spark.conf.set`.
+    """
+    get_spark_session().conf.set(key, value)
+
+
+def get_runtime_config_property(key: str):
+    """
+    Wraps `spark.conf.get`.
+    """
+    return get_spark_session().conf.get(key)
+
+
+def runtime_config_has(key: str):
+    """
+    Returns True if spark.conf has a value by the given `key`.
+    """
+    try:
+        get_runtime_config_property(key)
+    except Exception as e:
+        if "java.util.NoSuchElementException" in str(e):
+            return False
+    return True
