@@ -163,14 +163,6 @@ class LazyNotebook:
             t.validate(strict)
             self.ctx.logger.log(f"\t'{t.abs_file_path}'")
 
-    @staticmethod
-    def __run_notebook(path: str, timeout: int, arguments: dict, ctx: FlowContext):
-        """
-        Runs the current notebook.
-        This method gets overriden in unit tests.
-        """
-        return ctx.dbutils.notebook.run(path, timeout, arguments)
-
     def share_arguments(self) -> None:
         """
         Makes values of args, inputs and outputs available in the callee notebook.
@@ -243,7 +235,7 @@ class LazyNotebook:
                 **{a.Output.get_full_name(name): o.abs_file_path for name, o in self.get_outputs().items()}
             }
 
-            self.__last_run_result = LazyNotebook.__run_notebook(
+            self.__last_run_result = db.run_notebook(
                 self.rel_path,
                 self.__timeout,
                 arguments,

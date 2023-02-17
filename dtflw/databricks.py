@@ -1,6 +1,13 @@
 from pyspark.sql import SparkSession
 
 
+def run_notebook(path: str, timeout: int, arguments: dict):
+    """
+    Runs the current notebook.
+    """
+    return get_dbutils().notebook.run(path, timeout, arguments)
+
+
 def get_spark_session() -> SparkSession:
     """
     Returns a SparkSession instance.
