@@ -50,7 +50,9 @@ class Argument:
 
     @classmethod
     def create(cls, *arguments):
-
+        """
+        Returns a dict[str, Argument | Input | Output].
+        """
         names_and_values = {}
         if len(arguments) == 1 and isinstance(arguments[0], dict):
             names_and_values = arguments[0]

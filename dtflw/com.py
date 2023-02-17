@@ -85,20 +85,26 @@ class NotebooksChannel:
     def __init__(self):
         self.__bus = MessageBus()
 
-    def __share(self, notebook_abs_path, message):
-        self.__bus.share(self.CHANNEL, notebook_abs_path, message)
+    def __share(self, notebook_abs_path, sub_topic: str, message):
+
+        existing_message = self.__get(notebook_abs_path)
+        updated_message = {**existing_message, **{sub_topic: message}}
+
+        self.__bus.share(self.CHANNEL, notebook_abs_path, updated_message)
 
     def share_args(self, notebook_abs_path: str, args):
-        self.__share(notebook_abs_path, {"args": args})
+        self.__share(notebook_abs_path, "args", args)
 
     def share_inputs(self, notebook_abs_path: str, inputs):
-        self.__share(notebook_abs_path, {"inputs": inputs})
+        self.__share(notebook_abs_path, "inputs", inputs)
 
     def share_outputs(self, notebook_abs_path: str, outputs):
-        self.__share(notebook_abs_path, {"outputs": outputs})
+        self.__share(notebook_abs_path, "outputs", outputs)
 
-    def __get(self, notebook_abs_path: str, sub_topic: str):
+    def __get(self, notebook_abs_path: str, sub_topic: str = None):
         message = self.__bus.try_get(self.CHANNEL, notebook_abs_path, {})
+        if sub_topic is None:
+            return message
         return message[sub_topic] if sub_topic in message else {}
 
     def get_args(self, notebook_abs_path: str):
