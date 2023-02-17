@@ -157,7 +157,7 @@ class LazyNotebookTestCase(unittest.TestCase):
         # Arrange
         get_this_notebook_abs_path_mock.return_value = "/Repos/a@b.c/project/main"
         output_needs_eval_mock.return_value = outputs_need_eval
-        is_job_interactive_mock.return_value = False
+        is_job_interactive_mock.return_value = True
         get_session_mock.return_value = utils.SparkSessionMock()
 
         def do_nothing(strict):
@@ -206,7 +206,7 @@ class LazyNotebookTestCase(unittest.TestCase):
         # Arrange
         get_this_notebook_abs_path_mock.return_value = "/Repos/a@b.c/project/main"
         output_needs_eval_mock.return_value = True
-        is_job_interactive_mock.return_value = False
+        is_job_interactive_mock.return_value = True
         get_session_mock.return_value = utils.SparkSessionMock()
 
         def do_nothing(path: str, timeout: int, args: dict):
@@ -233,7 +233,7 @@ class LazyNotebookTestCase(unittest.TestCase):
         # Arrange
         get_this_notebook_abs_path_mock.return_value = "/Repos/a@b.c/project/main"
         run_notebook_mock.return_value = "foo"
-        is_job_interactive_mock.return_value = False
+        is_job_interactive_mock.return_value = True
         get_session_mock.return_value = utils.SparkSessionMock()
 
         actual = LazyNotebook("nb", self._ctx).run(is_lazy=False)
