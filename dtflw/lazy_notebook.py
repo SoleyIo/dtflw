@@ -238,8 +238,7 @@ class LazyNotebook:
             self.__last_run_result = db.run_notebook(
                 self.rel_path,
                 self.__timeout,
-                arguments,
-                self.ctx
+                arguments
             )
 
         # Check if outputs are valid. Raises an exception if not.
