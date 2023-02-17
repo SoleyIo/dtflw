@@ -90,7 +90,7 @@ def is_job_interactive() -> bool:
     Returns True if the current notebook is executed in an interactive job, and False otherwise.
     """
     job_type = try_get_context_tag("jobType")
-    return job_type is None or job_type.lower() != "workflow"
+    return job_type is None
 
 
 def set_runtime_config_property(key: str, value: str):
