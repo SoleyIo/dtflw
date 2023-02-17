@@ -141,12 +141,12 @@ class LazyNotebookTestCase(unittest.TestCase):
     )
     @unpack
     @patch("dtflw.databricks.get_spark_session")
-    @patch("dtflw.databricks.is_this_workflow")
+    @patch("dtflw.databricks.is_job_interactive")
     @patch("dtflw.databricks.get_this_notebook_abs_path")
     @patch("dtflw.output_table.OutputTable.needs_eval")
     @patch("dtflw.output_table.OutputTable.validate")
     @patch("dtflw.databricks.run_notebook")
-    def test_run(self, is_lazy, outputs_need_eval, is_expected_running, run_notebook_mock: MagicMock, output_validate_mock, output_needs_eval_mock, get_this_notebook_abs_path_mock, get_is_this_workflow_mock, get_session_mock):
+    def test_run(self, is_lazy, outputs_need_eval, is_expected_running, run_notebook_mock: MagicMock, output_validate_mock, output_needs_eval_mock, get_this_notebook_abs_path_mock, is_job_interactive_mock, get_session_mock):
         """
             Flow does not run a notebook
                 if is_lazy is True AND all outputs are evaluated.
@@ -157,7 +157,7 @@ class LazyNotebookTestCase(unittest.TestCase):
         # Arrange
         get_this_notebook_abs_path_mock.return_value = "/Repos/a@b.c/project/main"
         output_needs_eval_mock.return_value = outputs_need_eval
-        get_is_this_workflow_mock.return_value = False
+        is_job_interactive_mock.return_value = False
         get_session_mock.return_value = utils.SparkSessionMock()
 
         def do_nothing(strict):
@@ -180,13 +180,13 @@ class LazyNotebookTestCase(unittest.TestCase):
         else:
             run_notebook_mock.assert_not_called()
 
-    @patch("dtflw.databricks.is_this_workflow")
-    def test_run_failure_input_not_found(self, get_is_this_workflow_mock):
+    @patch("dtflw.databricks.is_job_interactive")
+    def test_run_failure_input_not_found(self, is_job_interactive_mock):
         """
         Raises an exeption if a required input table was not found
         before a run.
         """
-        get_is_this_workflow_mock.return_value = True
+        is_job_interactive_mock.return_value = False
 
         nb = LazyNotebook("nb", self._ctx).input("foo")
 
@@ -194,11 +194,11 @@ class LazyNotebookTestCase(unittest.TestCase):
             nb.run(is_lazy=False)
 
     @patch("dtflw.databricks.get_spark_session")
-    @patch("dtflw.databricks.is_this_workflow")
+    @patch("dtflw.databricks.is_job_interactive")
     @patch("dtflw.databricks.get_this_notebook_abs_path")
     @patch("dtflw.output_table.OutputTable.needs_eval")
     @patch("dtflw.databricks.run_notebook")
-    def test_run_failure_output_not_found(self, run_notebook_mock: MagicMock, output_needs_eval_mock, get_this_notebook_abs_path_mock, get_is_this_workflow_mock, get_session_mock):
+    def test_run_failure_output_not_found(self, run_notebook_mock: MagicMock, output_needs_eval_mock, get_this_notebook_abs_path_mock, is_job_interactive_mock, get_session_mock):
         """
         Raises an exeption if an expected output table was not found
         after a run.
@@ -206,7 +206,7 @@ class LazyNotebookTestCase(unittest.TestCase):
         # Arrange
         get_this_notebook_abs_path_mock.return_value = "/Repos/a@b.c/project/main"
         output_needs_eval_mock.return_value = True
-        get_is_this_workflow_mock.return_value = False
+        is_job_interactive_mock.return_value = False
         get_session_mock.return_value = utils.SparkSessionMock()
 
         def do_nothing(path: str, timeout: int, args: dict):
@@ -221,10 +221,10 @@ class LazyNotebookTestCase(unittest.TestCase):
             nb.run(is_lazy=False)
 
     @patch("dtflw.databricks.get_spark_session")
-    @patch("dtflw.databricks.is_this_workflow")
+    @patch("dtflw.databricks.is_job_interactive")
     @patch("dtflw.databricks.get_this_notebook_abs_path")
     @patch("dtflw.databricks.run_notebook")
-    def test_run_return_value(self, run_notebook_mock: MagicMock, get_this_notebook_abs_path_mock, get_is_this_workflow_mock, get_session_mock):
+    def test_run_return_value(self, run_notebook_mock: MagicMock, get_this_notebook_abs_path_mock, is_job_interactive_mock, get_session_mock):
         """
         Raises an exeption if an expected output table was not found
         after a run.
@@ -233,7 +233,7 @@ class LazyNotebookTestCase(unittest.TestCase):
         # Arrange
         get_this_notebook_abs_path_mock.return_value = "/Repos/a@b.c/project/main"
         run_notebook_mock.return_value = "foo"
-        get_is_this_workflow_mock.return_value = False
+        is_job_interactive_mock.return_value = False
         get_session_mock.return_value = utils.SparkSessionMock()
 
         actual = LazyNotebook("nb", self._ctx).run(is_lazy=False)

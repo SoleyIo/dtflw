@@ -85,12 +85,12 @@ def try_get_context_tag(key, defaut=None):
             raise
 
 
-def is_this_workflow() -> bool:
+def is_job_interactive() -> bool:
     """
-    Returns True if the current notebook is executed as a workflow, and False otherwise.
+    Returns True if the current notebook is executed by an interactive cluster.
     """
-    wf = try_get_context_tag("jobType")
-    return wf is not None and wf.lower() == "workflow"
+    job_type = try_get_context_tag("jobType")
+    return job_type is None or job_type.lower() != "workflow"
 
 
 def set_runtime_config_property(key: str, value: str):

@@ -210,7 +210,7 @@ class LazyNotebook:
         Argument of the `dbutils.notebook.exit` if exists otherwise `None`.
         """
 
-        if not db.is_this_workflow():
+        if db.is_job_interactive():
             # If interactive then share arguments for easy debugging of the callee notebook.
             self.share_arguments()
 
