@@ -159,21 +159,20 @@ class AzureStorageTestCase(unittest.TestCase):
         # Act/Assert
         self.assertEqual(storage.is_abs_path(path), is_abs)
 
-    def test_read_table(self):
+    @patch("pyspark.sql.session.SparkSession")
+    def test_read_table(self, spark_class_mock):
 
-        with patch("pyspark.sql.session.SparkSession") as spark_class_mock:
+        spark_mock = utils.mock_spark(spark_class_mock)
 
-            spark_mock = utils.mock_spark(spark_class_mock)
+        storage = AzureStorage(
+            "account", "container", "root_dir", spark_mock, None)
 
-            storage = AzureStorage(
-                "account", "container", "root_dir", spark_mock, None)
+        file_path = storage.get_abs_path(
+            storage.get_path_with_file_extension("table")
+        )
 
-            file_path = storage.get_abs_path(
-                storage.get_path_with_file_extension("table")
-            )
-
-            actual_df = storage.read_table(file_path)
-            self.assertTrue(actual_df)
+        actual_df = storage.read_table(file_path)
+        self.assertTrue(actual_df)
 
     def test_base_path(self):
 

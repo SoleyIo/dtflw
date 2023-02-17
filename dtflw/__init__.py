@@ -1,4 +1,4 @@
-import dtflw.arguments as arguments
+import dtflw.arguments as a
 from dtflw.flow_context import FlowContext
 from dtflw.flow import Flow
 import dtflw.databricks as db
@@ -42,9 +42,9 @@ def init_args(*args):
 
     Returns
     -------
-    dict[str: Arg]
+    dict[str: Argument]
     """
-    return arguments.initialize_arguments(arguments.Argument, *args)
+    return a.Argument.create(*args)
 
 
 def init_inputs(*inputs):
@@ -65,7 +65,7 @@ def init_inputs(*inputs):
     -------
     dict[str: Input]
     """
-    return arguments.initialize_arguments(arguments.Input, *inputs)
+    return a.Input.create(*inputs)
 
 
 def init_outputs(*outputs):
@@ -86,4 +86,4 @@ def init_outputs(*outputs):
     -------
     dict[str: Output]
     """
-    return arguments.initialize_arguments(arguments.Output, *outputs)
+    return a.Output.create(*outputs)

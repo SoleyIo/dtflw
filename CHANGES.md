@@ -1,6 +1,10 @@
 # Changes
 _All notable changes to this codebase are documented in this file._
 
+## [0.4.0] - 17.02.2023
+- Added `LazyNotebook.share_arguments`.
+- Removed `dtflw.events`.
+
 ## [0.3.0] - 14.02.2023
 - Added functions `init_args`, `init_inputs` and `init_outputs` for initializing arguments in a callee notebook
 using `dbutils.widgets` API.

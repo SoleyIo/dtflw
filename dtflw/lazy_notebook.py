@@ -1,12 +1,12 @@
 from __future__ import annotations
-from dtflw.events import FlowEvents
 from dtflw.pipeline import NotebookRun
 import dtflw.databricks as db
 import typing
 from dtflw.flow_context import FlowContext
 from dtflw.input_table import InputTable
 from dtflw.output_table import OutputTable
-import dtflw.arguments as arguments
+import dtflw.arguments as a
+import dtflw.com as com
 
 
 class LazyNotebook:
@@ -163,41 +163,28 @@ class LazyNotebook:
             t.validate(strict)
             self.ctx.logger.log(f"\t'{t.abs_file_path}'")
 
-    @staticmethod
-    def __run_notebook(path: str, timeout: int, arguments: dict, ctx: FlowContext):
+    def share_arguments(self) -> None:
         """
-        Runs the current notebook.
-        This method gets overriden in unit tests.
-        """
-        return ctx.dbutils.notebook.run(path, timeout, arguments)
-
-    def collect_arguments(self):
-        """
-        Collects arguments for this notebook: regular arguments (args) as well as inputs and outputs.
-
-        Returns
-        -------
-        [(name: str, value: str, suffix: str),] 
+        Makes values of args, inputs and outputs available in the callee notebook.
+        Retrieve them with `init_args`, `init_inputs` and `init_outputs` respectively.
         """
 
-        args = [
-            (name, value, arguments.Argument.NAME_SUFFIX)
-            for (name, value) in self.__args.items()
-        ]
+        ch = com.NotebooksChannel()
 
-        args.extend([
-            (i.name, i.abs_file_path, arguments.Input.NAME_SUFFIX)
-            for i
-            in self.__inputs.values()
-        ])
+        ch.share_args(
+            db.get_notebook_abs_path(self.rel_path),
+            self.get_args()
+        )
 
-        args.extend([
-            (o.name, o.abs_file_path, arguments.Output.NAME_SUFFIX)
-            for o
-            in self.__outputs.values()
-        ])
+        ch.share_inputs(
+            db.get_notebook_abs_path(self.rel_path),
+            {name: i.abs_file_path for name, i in self.get_inputs().items()}
+        )
 
-        return args
+        ch.share_outputs(
+            db.get_notebook_abs_path(self.rel_path),
+            {name: o.abs_file_path for name, o in self.get_outputs().items()}
+        )
 
     def run(self, is_lazy: bool = False, strict_validation: bool = False):
         """
@@ -222,7 +209,10 @@ class LazyNotebook:
         -------
         Argument of the `dbutils.notebook.exit` if exists otherwise `None`.
         """
-        self.ctx.events.fire(FlowEvents.NOTEBOOK_RUN_REQUESTED, self)
+
+        if not db.is_this_workflow():
+            # If interactive then share arguments for easy debugging of the callee notebook.
+            self.share_arguments()
 
         # Check if inputs are valid. Raises an exception if not.
         self.__validate_tables(self.__inputs.values(), "Input")
@@ -239,14 +229,17 @@ class LazyNotebook:
             self.ctx.logger.log(
                 f"Running: '{db.get_notebook_abs_path(self.rel_path)}'")
 
-            arguments = {f"{name}{suffix}": value
-                        for (name, value, suffix) in self.collect_arguments()}
+            arguments = {
+                **{a.Argument.get_full_name(name): value for name, value in self.get_args().items()},
+                **{a.Input.get_full_name(name): i.abs_file_path for name, i in self.get_inputs().items()},
+                **{a.Output.get_full_name(name): o.abs_file_path for name, o in self.get_outputs().items()}
+            }
 
-            self.__last_run_result = LazyNotebook.__run_notebook(
+            self.__last_run_result = db.run_notebook(
                 self.rel_path,
                 self.__timeout,
-                arguments,
-                self.ctx)
+                arguments
+            )
 
         # Check if outputs are valid. Raises an exception if not.
         self.__validate_tables(

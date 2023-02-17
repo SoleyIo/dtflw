@@ -1,10 +1,10 @@
 import unittest
 from unittest.mock import MagicMock, patch
-from dtflw.events import EventHandlerBase, FlowEvents
 from dtflw.logger import DefaultLogger
 from ddt import ddt, data, unpack
 from dtflw.lazy_notebook import LazyNotebook
 from dtflw.flow_context import FlowContext
+from tests import utils
 from tests.utils import StorageMock
 
 
@@ -14,7 +14,7 @@ class LazyNotebookTestCase(unittest.TestCase):
     def setUp(self) -> None:
         self._storage = StorageMock(
             "account", "container", "", None, None)
-            
+
         self._ctx = FlowContext(
             storage=self._storage,
             spark=None,
@@ -140,11 +140,13 @@ class LazyNotebookTestCase(unittest.TestCase):
         (False, True, True),
     )
     @unpack
+    @patch("dtflw.databricks.get_spark_session")
+    @patch("dtflw.databricks.is_this_workflow")
     @patch("dtflw.databricks.get_this_notebook_abs_path")
     @patch("dtflw.output_table.OutputTable.needs_eval")
     @patch("dtflw.output_table.OutputTable.validate")
-    @patch("dtflw.lazy_notebook.LazyNotebook._LazyNotebook__run_notebook")
-    def test_run(self, is_lazy, outputs_need_eval, is_expected_running, run_actually_mock, output_validate_mock, output_needs_eval_mock, get_this_notebook_abs_path_mock):
+    @patch("dtflw.databricks.run_notebook")
+    def test_run(self, is_lazy, outputs_need_eval, is_expected_running, run_notebook_mock: MagicMock, output_validate_mock, output_needs_eval_mock, get_this_notebook_abs_path_mock, get_is_this_workflow_mock, get_session_mock):
         """
             Flow does not run a notebook
                 if is_lazy is True AND all outputs are evaluated.
@@ -155,38 +157,48 @@ class LazyNotebookTestCase(unittest.TestCase):
         # Arrange
         get_this_notebook_abs_path_mock.return_value = "/Repos/a@b.c/project/main"
         output_needs_eval_mock.return_value = outputs_need_eval
+        get_is_this_workflow_mock.return_value = False
+        get_session_mock.return_value = utils.SparkSessionMock()
 
         def do_nothing(strict):
             pass
         output_validate_mock.side_effect = do_nothing
 
         # Act
-        (
-            LazyNotebook("nb", self._ctx)
-            .output("foo")
-            .run(is_lazy=is_lazy, strict_validation=False)
-        )
+
+        nb = LazyNotebook("nb", self._ctx).output("foo")
+        nb.run(is_lazy=is_lazy, strict_validation=False)
 
         if is_expected_running:
-            run_actually_mock.assert_called_once()
+            run_notebook_mock.assert_called_once_with(
+                nb.rel_path,
+                0,
+                {
+                    "foo_out": self._ctx.storage.get_abs_path("project/nb/foo.parquet")
+                }
+            )
         else:
-            run_actually_mock.assert_not_called()
+            run_notebook_mock.assert_not_called()
 
-    def test_run_failure_input_not_found(self):
+    @patch("dtflw.databricks.is_this_workflow")
+    def test_run_failure_input_not_found(self, get_is_this_workflow_mock):
         """
         Raises an exeption if a required input table was not found
         before a run.
         """
+        get_is_this_workflow_mock.return_value = True
 
         nb = LazyNotebook("nb", self._ctx).input("foo")
 
         with self.assertRaisesRegex(Exception, "Required input not found."):
             nb.run(is_lazy=False)
 
+    @patch("dtflw.databricks.get_spark_session")
+    @patch("dtflw.databricks.is_this_workflow")
     @patch("dtflw.databricks.get_this_notebook_abs_path")
     @patch("dtflw.output_table.OutputTable.needs_eval")
-    @patch("dtflw.lazy_notebook.LazyNotebook._LazyNotebook__run_notebook")
-    def test_run_failure_output_not_found(self, run_actually_mock: MagicMock, output_needs_eval_mock, get_this_notebook_abs_path_mock):
+    @patch("dtflw.databricks.run_notebook")
+    def test_run_failure_output_not_found(self, run_notebook_mock: MagicMock, output_needs_eval_mock, get_this_notebook_abs_path_mock, get_is_this_workflow_mock, get_session_mock):
         """
         Raises an exeption if an expected output table was not found
         after a run.
@@ -194,11 +206,13 @@ class LazyNotebookTestCase(unittest.TestCase):
         # Arrange
         get_this_notebook_abs_path_mock.return_value = "/Repos/a@b.c/project/main"
         output_needs_eval_mock.return_value = True
+        get_is_this_workflow_mock.return_value = False
+        get_session_mock.return_value = utils.SparkSessionMock()
 
-        def do_nothing(path: str, timeout: int, args: dict, ctx: FlowContext):
+        def do_nothing(path: str, timeout: int, args: dict):
             pass
 
-        run_actually_mock.side_effect = do_nothing
+        run_notebook_mock.side_effect = do_nothing
 
         nb = LazyNotebook("nb", self._ctx).output("foo")
 
@@ -206,9 +220,11 @@ class LazyNotebookTestCase(unittest.TestCase):
         with self.assertRaisesRegex(Exception, "Expected output not found."):
             nb.run(is_lazy=False)
 
+    @patch("dtflw.databricks.get_spark_session")
+    @patch("dtflw.databricks.is_this_workflow")
     @patch("dtflw.databricks.get_this_notebook_abs_path")
-    @patch("dtflw.lazy_notebook.LazyNotebook._LazyNotebook__run_notebook")
-    def test_run_return_value(self, run_actually_mock: MagicMock, get_this_notebook_abs_path_mock):
+    @patch("dtflw.databricks.run_notebook")
+    def test_run_return_value(self, run_notebook_mock: MagicMock, get_this_notebook_abs_path_mock, get_is_this_workflow_mock, get_session_mock):
         """
         Raises an exeption if an expected output table was not found
         after a run.
@@ -216,64 +232,11 @@ class LazyNotebookTestCase(unittest.TestCase):
 
         # Arrange
         get_this_notebook_abs_path_mock.return_value = "/Repos/a@b.c/project/main"
-        run_actually_mock.return_value = "foo"
+        run_notebook_mock.return_value = "foo"
+        get_is_this_workflow_mock.return_value = False
+        get_session_mock.return_value = utils.SparkSessionMock()
 
-        nb = LazyNotebook("nb", self._ctx)
+        actual = LazyNotebook("nb", self._ctx).run(is_lazy=False)
 
         # Act/Assert
-        self.assertEqual(nb.run(is_lazy=False), "foo")
-
-    @patch("dtflw.databricks.get_this_notebook_abs_path")
-    def test_collect_arguments(self, get_this_notebook_abs_path_mock):
-
-        # Arrange
-        get_this_notebook_abs_path_mock.return_value = "/Repos/a@b.c/project/main"
-
-        # Act
-        actual_args = (
-            LazyNotebook("nb", self._ctx)
-            .args({
-                "foo": "bar",
-            })
-            .input("bar")
-            .output("baz")
-        ).collect_arguments()
-
-        # Assert
-        self.assertListEqual(
-            actual_args,
-            [
-                ('foo', 'bar', ''),
-                ('bar', None, '_in'),
-                ('baz', 'wasbs://container@account.blob.core.windows.net/project/nb/baz.parquet', '_out')]
-        )
-
-    @data(False, True)
-    @patch("dtflw.databricks.get_this_notebook_abs_path")
-    @patch("dtflw.lazy_notebook.LazyNotebook._LazyNotebook__run_notebook")
-    def test_notebook_run_requested_event(self, is_lazy, run_notebook_mock, get_this_notebook_abs_path_mock):
-
-        # Arrange
-        get_this_notebook_abs_path_mock.return_value = "/Repos/a@b.c/project/nb"
-        run_notebook_mock.return_value = "foo"
-
-        class TestHandler(EventHandlerBase):
-            def __init__(self):
-                self.actual_nb = None
-                self.counter = 0
-
-            def handle(self, nb):
-                self.actual_nb = nb
-                self.counter += 1
-
-        h = TestHandler()
-        self._ctx.events.subscribe(FlowEvents.NOTEBOOK_RUN_REQUESTED, h)
-
-        nb = LazyNotebook("nb", self._ctx)
-
-        # Act
-        nb.run(is_lazy=is_lazy)
-
-        # Assert
-        self.assertEqual(h.actual_nb, nb)
-        self.assertEqual(h.counter, 1)
+        self.assertEqual(actual, "foo")
