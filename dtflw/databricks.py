@@ -87,7 +87,7 @@ def try_get_context_tag(key, defaut=None):
 
 def is_job_interactive() -> bool:
     """
-    Returns True if the current notebook is executed by an interactive cluster.
+    Returns True if the current notebook is executed in an interactive job, and False otherwise.
     """
     job_type = try_get_context_tag("jobType")
     return job_type is None or job_type.lower() != "workflow"
