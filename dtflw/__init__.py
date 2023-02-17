@@ -42,7 +42,7 @@ def init_args(*args):
 
     Returns
     -------
-    dict[str: Arg]
+    dict[str: Argument]
     """
     return a.Argument.create(*args)
 
