@@ -45,11 +45,10 @@ jobs:
           path: coverage.json
     - name: "Summarize Coverage"
       run: |
-        export COV=$(python -c "import json;print(json.load(open('coverage.json'))['totals']['percent_covered_display'])")
-        echo $COV
-        echo "cov=$COV" >> $GITHUB_ENV
-        echo $GITHUB_ENV
-        echo "Coverage: ${COV}%" >> $GITHUB_STEP_SUMMARY
+        export TOTAL=$(python -c "import json;print(json.load(open('coverage.json'))['totals']['percent_covered_display'])")
+        echo "total=$TOTAL" >> $GITHUB_ENV
+        echo "Total coverage: ${TOTAL}%" >> $GITHUB_STEP_SUMMARY
+
 
   coverage:
     name: Coverage
@@ -64,7 +63,7 @@ jobs:
           gistID: 559a8785afeae906021482849a3b6762
           filename: dtflw-coverage-badge.json
           label: Coverage
-          message: ${{ env.cov }}%
+          message: ${{ env.total }}%
           minColorRange: 60
           maxColorRange: 95
-          valColorRange: ${{ env.cov }}
+          valColorRange: ${{ env.total }}
