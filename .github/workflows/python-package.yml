@@ -46,9 +46,9 @@ jobs:
     - name: "Summarize Coverage"
       run: |
         export COV=$(python -c "import json;print(json.load(open('coverage.json'))['totals']['percent_covered_display'])")
-        echo ">>> ${COV}%"
+        echo $COV
         echo "cov=$COV" >> $GITHUB_ENV
-        echo ">>> ${$GITHUB_ENV}%"
+        echo ${$GITHUB_ENV}
         echo "Coverage: ${COV}%" >> $GITHUB_STEP_SUMMARY
 
   coverage:
