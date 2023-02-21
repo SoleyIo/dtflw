@@ -43,22 +43,26 @@ jobs:
       with:
           name: covdata
           path: coverage.json
+    - name: "Summarize Coverage"
+      run: |
+        export COV=$(python -c "import json;print(json.load(open('coverage.json'))['totals']['percent_covered_display'])")
+        echo "cov=$COV" >> $GITHUB_ENV
+        echo "Coverage: ${COV}%" >> $GITHUB_STEP_SUMMARY
 
-#   coverage:
-#     name: Coverage
-#     needs: tests
-#     runs-on: ubuntu-latest
-#     steps:
+  coverage:
+    name: Coverage
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
 
-#       - name: "Create a badge"
-#         uses: schneegans/dynamic-badges-action@v1.6.0
-#         with:
-#           # GIST_TOKEN is a GitHub personal access token with scope "gist".
-#           auth: ${{ secrets.GIST_TOKEN }}
-#           gistID: 123abc456def789   # replace with your real Gist id.
-#           filename: covbadge.json
-#           label: Coverage
-#           message: ${{ env.total }}%
-#           minColorRange: 50
-#           maxColorRange: 90
-#           valColorRange: ${{ env.total }}
+      - name: "Create a badge"
+        uses: schneegans/dynamic-badges-action@v1.6.0
+        with:
+          auth: ${{ secrets.DTFLW_COV_GIST_TOKEN }}
+          gistID: 559a8785afeae906021482849a3b6762
+          filename: dtflw-coverage-badge.json
+          label: Coverage
+          message: ${{ env.cov }}%
+          minColorRange: 50
+          maxColorRange: 100
+          valColorRange: ${{ env.cov }}
