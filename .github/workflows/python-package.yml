@@ -48,7 +48,7 @@ jobs:
         export COV=$(python -c "import json;print(json.load(open('coverage.json'))['totals']['percent_covered_display'])")
         echo $COV
         echo "cov=$COV" >> $GITHUB_ENV
-        echo ${$GITHUB_ENV}
+        echo $GITHUB_ENV
         echo "Coverage: ${COV}%" >> $GITHUB_STEP_SUMMARY
 
   coverage:
@@ -65,6 +65,6 @@ jobs:
           filename: dtflw-coverage-badge.json
           label: Coverage
           message: ${{ env.cov }}%
-          minColorRange: 50
-          maxColorRange: 100
+          minColorRange: 60
+          maxColorRange: 95
           valColorRange: ${{ env.cov }}
