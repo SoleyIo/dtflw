@@ -1,9 +1,5 @@
 # Changes
-_All notable changes to this codebase are documented in this file._
-
-## [0.6.0] - 21.02.2023
-- Added a testing and coverage reporting workflow.
-- Added status badges on [README.md](README.md).
+_All notable changes to the codebase are documented in this file._
 
 ## [0.5.0] - 17.02.2023
 - Added `dtflw.databricks.is_job_interactive`.
