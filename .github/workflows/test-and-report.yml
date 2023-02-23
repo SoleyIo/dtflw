@@ -5,9 +5,16 @@ name: Test and Report Coverage
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main
+    paths:
+      - "dtflw/**"
+      - "tests/**"
+      - ".github/workflows/test-and-report.yml"
   pull_request:
-    branches: ["main"]
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
   tests:
