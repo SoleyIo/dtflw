@@ -1,5 +1,9 @@
 # dtflw / <ins>d</ins>a<ins>t</ins>a<ins>fl</ins>o<ins>w</ins>
 
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/SoleyIo/dtflw/test-and-report.yml)
+![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/skndrg/559a8785afeae906021482849a3b6762/raw/7504f308ddf48ee752ea1367270fa7f04dce5c43/dtflw-coverage-badge.json)
+![GitHub](https://img.shields.io/github/license/SoleyIo/dtflw)
+
 `dtflw` is a Python framework for building modular data pipelines based on [Databricks dbutils.notebook API](https://docs.databricks.com/notebooks/notebook-workflows.html). It was conceived with an intention to facilitate development and maintenance of Databricks data pipelines.
 
 ## Why `dtflw`?
