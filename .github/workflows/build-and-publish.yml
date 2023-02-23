@@ -6,11 +6,12 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Upload Python Package
+name: Build and Upload the Python Package to PyPi
 
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 permissions:
   contents: read
