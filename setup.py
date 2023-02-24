@@ -8,7 +8,7 @@ long_description_content = (here / "README.md").read_text(encoding="utf-8")
 
 setup(
     name="dtflw",
-    version="0.5.0",
+    version="0.5.1",
 
     description="dtflw is a Python framework for building modular data pipelines based on Databricks dbutils.notebook API.",
     long_description=long_description_content,
