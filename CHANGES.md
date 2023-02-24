@@ -1,6 +1,9 @@
 # Changes
 _All notable changes to the codebase are documented in this file._
 
+## [0.5.1] - 24.02.2023
+- Prepared the package for PyPi.
+
 ## [0.5.0] - 17.02.2023
 - Added `dtflw.databricks.is_job_interactive`.
 
