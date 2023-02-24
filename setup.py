@@ -29,7 +29,7 @@ setup(
         "Programming Language :: Python :: 3.10"
     ],
 
-    keywords="databricks, data pipelines, etl, data engineering"
+    keywords="databricks, data pipelines, etl, data engineering",
 
     packages=find_packages(where="dtflw"),
 
