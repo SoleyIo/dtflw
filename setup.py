@@ -21,9 +21,9 @@ setup(
 
     classifiers=[
         "Development Status :: 3 - Alpha",
-        "Intended Audience :: Databricks Data Engineers",
-        "Topic :: Software Development :: Data Pipelines",
-        "License :: OSI Approved :: BSD License :: 3-Clause 'New' or 'Revised' License (BSD-3-Clause)",
+        "Intended Audience :: Developers",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "License :: OSI Approved :: BSD License",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10"
