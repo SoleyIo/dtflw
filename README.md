@@ -3,6 +3,7 @@
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/SoleyIo/dtflw/test-and-report.yml)
 ![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/skndrg/559a8785afeae906021482849a3b6762/raw/7504f308ddf48ee752ea1367270fa7f04dce5c43/dtflw-coverage-badge.json)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/SoleyIo/dtflw)
+![PyPI](https://img.shields.io/pypi/v/dtflw)
 ![GitHub](https://img.shields.io/github/license/SoleyIo/dtflw)
 
 `dtflw` is a Python framework for building modular data pipelines based on [Databricks dbutils.notebook API](https://docs.databricks.com/notebooks/notebook-workflows.html). It was conceived with an intention to facilitate development and maintenance of Databricks data pipelines.
@@ -20,16 +21,16 @@ On the other side, when exploring tables (files) on a storage (e.g. Azure Blob, 
 >it is unclear which code produced those tables.
 
 The complexity rises even more when a team needs to 
->maintain numerous pipelines, each structured in its own way.
+>maintain numerous pipelines, each structured in its own peculiar way.
 
 ## How does `dtflw` work?
-This project identifies _implicit relationships between data and code in a pipeline_ as the main reason for increasing complexity.
+This project identifies `implicit relationships between notebooks and tables` as the main reason for increasing complexity of data pipelines.
 
-Therefore, `dtflw` makes relationships between tables and notebooks explicit by building around a simple dataflow model:
+Therefore, `dtflw` makes relationships between tables and notebooks explicit by building on a simple dataflow model:
 > Each notebook of a pipeline
 > 1. consumes input tables (possibly none), 
 > 2. produces output tables (possibly none),
-> 3. and may require additional arguments to run.  
+> 3. and may require additional arguments to work.  
 >
 > Thus, a pipeline is a sequence of notebooks chained by input-output tables.
 
@@ -81,7 +82,7 @@ is_lazy = True
 storage.read_table(_flow["SalesStatsPerProduct"]).display()
 ```
 
-File paths of input and output tables are passed to a callee notebook as arguments. [dbutils.widgets API](https://docs.databricks.com/notebooks/widgets.htm) is used to fetch values passed at runtime.
+File paths of input and output tables are passed to a callee notebook as arguments. At runtime, values can be obtained with `init_*` functions (use `dbutils.widgets` API):
 
 ```python
 # Notebook 
@@ -103,9 +104,9 @@ sales_stats_per_product_df.write.mode("overwrite")\
 ```
 
 Additionally, `dtflw` takes care of constructing file paths for output tables. 
-> It derives file paths of outputs from a path of corresponding notebook which save them. 
+> It derives file paths of outputs from the path of a corresponding notebook which writes them to a storage. 
 
-For the example above, an Azure blob container would look something like this:
+In the example above, an Azure blob container is used as a storage and, after a pipeline run, it would look something like this:
 ```
 https://account.blob.core.windows.net/container/
 
@@ -129,23 +130,14 @@ https://account.blob.core.windows.net/container/
 
 ## Getting Started
 
-Clone the repo `git clone https://github.com/SoleyIo/dtflw.git`.
+- To start with the source code: clone the repo `git clone https://github.com/SoleyIo/dtflw.git`.
 
-### Prerequisites
-
-`dtflw` is tested with Python 3.8.*.
-
-Install dependencies from the `install_requires` section in [setup.py](setup.py). You may want to to do that in a virtual environment and could use [virtualenv](https://pypi.org/project/virtualenv/) for that.
-
-### Building
-
-Build a `.whl` Python package `python setup.py sdist bdist_wheel`.
+- To start using on Databricks: see [Installing](#installing) below. 
 
 ### Installing
 
-As soon as you have a `.whl` Python package, [install it on a Databricks cluster](dtflw-0.0.8-py3-none-any.whl). 
-
-`dtflw` is ready to be used.
+`dtflw` is available on [PyPi](https://pypi.org/project/dtflw/).
+See [how to get it on Databricks](https://docs.databricks.com/libraries/index.html#libraries). 
 
 ## Changes
 
