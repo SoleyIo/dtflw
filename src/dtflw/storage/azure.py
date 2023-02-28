@@ -46,7 +46,7 @@ class AzureStorage(FileStorageBase):
         return f"wasbs://{self.__container_name}@{self.__account_name}.blob.core.windows.net/"
 
 
-def init_storage(account_name: str, container_name: str, root_dir: str = None, spark: SparkSession = None, dbutils=None):
+def init_storage(account_name: str, container_name: str, root_dir: str = None, spark: SparkSession = None, dbutils=None) -> AzureStorage:
     """
     Returns a new instance of AzureStorage. 
     It is suggested using this factory function instead of the constructor of AzureStorage class.

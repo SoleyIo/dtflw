@@ -162,7 +162,7 @@ class FileStorageBase(ABC):
 
         return file_exists(self.get_abs_path(path), self.__dbutils)
 
-    def get_path_with_file_extension(self, file_path):
+    def get_path_with_file_extension(self, file_path) -> str:
         """
         Returns a given file path with a file extension.
 
@@ -171,7 +171,7 @@ class FileStorageBase(ABC):
         """
         return f"{file_path}.parquet"
 
-    def get_path_in_root_dir(self, rel_path):
+    def get_path_in_root_dir(self, rel_path) -> str:
         """
         Returns a path relative to the base path with the root directory preceding.
         """
@@ -185,13 +185,3 @@ class FileStorageBase(ABC):
         Override this method in a subclass to change to a different file format.
         """
         return self.__spark.read.parquet(path)
-
-
-class DbfsStorage(FileStorageBase):
-    def __init__(self, root_dir: str, spark: SparkSession, dbutils):
-
-        super().__init__(spark, dbutils, root_dir)
-
-    @property
-    def base_path(self):
-        return "dbfs:/"

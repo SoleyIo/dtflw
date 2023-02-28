@@ -1,8 +1,7 @@
 import unittest
 from unittest.mock import patch
 from ddt import ddt, data, unpack
-from dtflw.storage.azure import AzureStorage
-from dtflw.storage.fs import DbfsStorage
+from dtflw.storage.dbfs import DbfsStorage
 from collections import namedtuple
 import tests.utils as utils
 
