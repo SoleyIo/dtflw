@@ -23,8 +23,7 @@ class OutputTableTestCase(unittest.TestCase):
             abs_file_path="foo.parquet",
             cols=[("id", "bigint")],
             ctx=FlowContext(
-                storage=utils.StorageMock("account", "container",
-                                     "", spark_mock, dbutils_mock),
+                storage=utils.StorageMock("", spark_mock, dbutils_mock),
                 spark=spark_mock,
                 dbutils=dbutils_mock,
                 logger=DefaultLogger()
@@ -49,8 +48,7 @@ class OutputTableTestCase(unittest.TestCase):
             abs_file_path="foo.parquet",
             cols=[("id", "bigint")],
             ctx=FlowContext(
-                storage=utils.StorageMock("account", "container",
-                                     "", spark_mock, dbutils_mock),
+                storage=utils.StorageMock("", spark_mock, dbutils_mock),
                 spark=spark_mock,
                 dbutils=dbutils_mock,
                 logger=DefaultLogger()
@@ -76,8 +74,7 @@ class OutputTableTestCase(unittest.TestCase):
             # Expected columns
             cols=[("name", "string")],
             ctx=FlowContext(
-                storage=utils.StorageMock("account", "container",
-                                     "", spark_mock, dbutils_mock),
+                storage=utils.StorageMock("", spark_mock, dbutils_mock),
                 spark=spark_mock,
                 dbutils=dbutils_mock,
                 logger=DefaultLogger()
@@ -102,8 +99,7 @@ class OutputTableTestCase(unittest.TestCase):
             abs_file_path="foo.parquet",
             cols=None,
             ctx=FlowContext(
-                storage=utils.StorageMock("account", "container",
-                                     "", None, dbutils_mock),
+                storage=utils.StorageMock("", None, dbutils_mock),
                 spark=None,
                 dbutils=dbutils_mock,
                 logger=DefaultLogger()

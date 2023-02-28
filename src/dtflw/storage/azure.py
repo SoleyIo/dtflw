@@ -43,7 +43,7 @@ class AzureStorage(FileStorageBase):
         """
         Returns the base path.
         """
-        return f"wasbs://{self.__container_name}@{self.__account_name}.blob.core.windows.net"
+        return f"wasbs://{self.__container_name}@{self.__account_name}.blob.core.windows.net/"
 
 
 def init_storage(account_name: str, container_name: str, root_dir: str = None, spark: SparkSession = None, dbutils=None):

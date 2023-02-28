@@ -12,8 +12,7 @@ from tests.utils import StorageMock
 class LazyNotebookTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
-        self._storage = StorageMock(
-            "account", "container", "", None, None)
+        self._storage = StorageMock("", None, None)
 
         self._ctx = FlowContext(
             storage=self._storage,
@@ -26,14 +25,13 @@ class LazyNotebookTestCase(unittest.TestCase):
         # Input's abs path is None.
         (None, None),
         # Input's abs path gets resolved from earlier outputs.
-        (None, "wasbs://container@account.blob.core.windows.net/foo.txt"),
+        (None, "mock:/foo.txt"),
         # Input's abs path gets built from the given relative path.
-        ("bar/foo.txt", "wasbs://container@account.blob.core.windows.net/bar/foo.txt"),
+        ("bar/foo.txt", "mock:/bar/foo.txt"),
         # Input's abs path is given explicitly.
-        ("wasbs://container@account.blob.core.windows.net/foo.txt",
-         "wasbs://container@account.blob.core.windows.net/foo.txt"),
+        ("mock:/foo.txt", "mock:/foo.txt"),
         # Input's abs path gets resolved from the earlier output given by source_table.
-        (None, "wasbs://container@account.blob.core.windows.net/baz.txt", "baz")
+        (None, "mock:/baz.txt", "baz")
     )
     @unpack
     def test_input(self, file_path, expected_input_path, source_table=None):
@@ -74,14 +72,12 @@ class LazyNotebookTestCase(unittest.TestCase):
 
     @data(
         # Default. Output's abs file path gets resolved from a path of the current notebook.
-        (None,
-         "wasbs://container@account.blob.core.windows.net/project/nb/foo.parquet"),
+        (None, "mock:/project/nb/foo.parquet"),
         # Outputs's path is given as a relative path.
-        ("project/foo.parquet",
-         "wasbs://container@account.blob.core.windows.net/project/foo.parquet"),
+        ("project/foo.parquet", "mock:/project/foo.parquet"),
         # Outputs's path is given as an abs file path.
-        ("wasbs://container@account.blob.core.windows.net/foo.parquet",
-         "wasbs://container@account.blob.core.windows.net/foo.parquet")
+        ("mock:/foo.parquet",
+         "mock:/foo.parquet")
     )
     @unpack
     @patch("dtflw.databricks.get_this_notebook_abs_path")
