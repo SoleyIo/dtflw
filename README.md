@@ -34,7 +34,10 @@ Therefore, `dtflw` makes relationships between tables and notebooks explicit by 
 >
 > Thus, a pipeline is a sequence of notebooks chained by input-output tables.
 
-Here is an example of a Databricks pipeline built using `dtflw`:
+## Example
+> Take a look on [the demo project showcasing the framework](demos/dtflw_intro/README.md).
+
+Here is how a Databricks pipeline built with `dtflw` could look like:
 
 ```python
 # Notebook 
