@@ -1,5 +1,5 @@
 # Introduction to `dtflw` Framework
-This demo demonstrates the key features of the framework.
+This project demonstrates the key features of the framework.
 
 ## Get Started
 1. Copy all files from `demos/data/` to `dbfs:/FileStore/tables/dtflw_intro/` directory.
