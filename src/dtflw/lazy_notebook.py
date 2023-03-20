@@ -106,7 +106,7 @@ class LazyNotebook:
         ----------
         name: str
             Name of an output table.
-        cols: list[str,str]
+        cols: list[(str,str)]
             Schema of an expected output (DataFrame.dtypes format).
         file_path: str = None
             File path to an output table.

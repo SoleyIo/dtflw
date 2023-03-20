@@ -1,13 +1,13 @@
 import unittest
 from unittest.mock import patch
 from ddt import ddt, data, unpack
-from dtflw.storage.azure import AzureStorage
+from dtflw.storage.dbfs import DbfsStorage
 from collections import namedtuple
 import tests.utils as utils
 
 
 @ddt
-class AzureStorageTestCase(unittest.TestCase):
+class DbfsStorageTestCase(unittest.TestCase):
 
     @data(
         ("", "", ""),
@@ -19,7 +19,7 @@ class AzureStorageTestCase(unittest.TestCase):
     @unpack
     def test_get_path_in_root_dir(self, root_dir, rel_path, expected_abs_path):
 
-        storage = AzureStorage("account", "container", root_dir, None, None)
+        storage = DbfsStorage(root_dir, None, None)
 
         actual_abs_path = storage.get_path_in_root_dir(rel_path)
         self.assertEqual(expected_abs_path, actual_abs_path)
@@ -31,7 +31,7 @@ class AzureStorageTestCase(unittest.TestCase):
     )
     def test_root_dir(self, root_dir):
 
-        storage = AzureStorage("acc", "con", root_dir, None, None)
+        storage = DbfsStorage(root_dir, None, None)
         self.assertEqual(root_dir, storage.root_dir)
 
     @data(
@@ -69,7 +69,7 @@ class AzureStorageTestCase(unittest.TestCase):
         """
 
         # Arrange
-        storage = AzureStorage("account", "container", "", None, None)
+        storage = DbfsStorage("", None, None)
 
         fs = {
             storage.base_path: [
@@ -114,12 +114,9 @@ class AzureStorageTestCase(unittest.TestCase):
     @unpack
     def test_get_abs_path(self, rel_path, root_dir):
         # Arrange
-        acc_name = "account"
-        con_name = "container"
 
-        storage = AzureStorage(acc_name, con_name, root_dir, None, None)
-
-        expected_path = f"wasbs://{con_name}@{acc_name}.blob.core.windows.net/{rel_path}"
+        storage = DbfsStorage(root_dir, None, None)
+        expected_path = f"dbfs:/{rel_path}"
 
         # Act
         actual_path = storage.get_abs_path(rel_path)
@@ -139,22 +136,21 @@ class AzureStorageTestCase(unittest.TestCase):
 
         dbutils_mock = utils.mock_dbutils(fs_ls_raises_error=not does_exist)
 
-        storage = AzureStorage(
-            "account", "container", "", None, dbutils_mock)
+        storage = DbfsStorage("", None, dbutils_mock)
 
         self.assertEqual(does_exist, storage.exists(path_to_check))
 
     @data(
         ("", "", False),
-        ("wasbs://con@acc.blob.core.windows.net/", "root", True),
-        ("wasbs://con@acc.blob.core.windows.net/dir/file.txt", "root", True),
-        ("wasbs://con@acc.blob.core.windows.net/dir/file.txt", "", True),
+        ("dbfs:/", "root", True),
+        ("dbfs:/dir/file.txt", "root", True),
+        ("dbfs:/dir/file.txt", "", True),
         ("root/sub_root/", "root", False)
     )
     @unpack
     def test_is_abs_path(self, path, root_dir, is_abs):
         # Arrange
-        storage = AzureStorage("acc", "con", root_dir, None, None)
+        storage = DbfsStorage(root_dir, None, None)
 
         # Act/Assert
         self.assertEqual(storage.is_abs_path(path), is_abs)
@@ -164,8 +160,7 @@ class AzureStorageTestCase(unittest.TestCase):
 
         spark_mock = utils.mock_spark(spark_class_mock)
 
-        storage = AzureStorage(
-            "account", "container", "root_dir", spark_mock, None)
+        storage = DbfsStorage("root_dir", spark_mock, None)
 
         file_path = storage.get_abs_path(
             storage.get_path_with_file_extension("table")
@@ -176,23 +171,23 @@ class AzureStorageTestCase(unittest.TestCase):
 
     def test_base_path(self):
 
-        storage = AzureStorage("account", "container", "root_dir", None, None)
+        storage = DbfsStorage("root_dir", None, None)
 
         self.assertEqual(
             storage.base_path,
-            "wasbs://container@account.blob.core.windows.net/"
+            "dbfs:/"
         )
 
     @data(
         ("file", "file.parquet"),
         ("root/file", "root/file.parquet"),
-        ("wasbs://container@account.blob.core.windows.net/foo/bar",
-         "wasbs://container@account.blob.core.windows.net/foo/bar.parquet")
+        ("dbfs:/foo/bar",
+         "dbfs:/foo/bar.parquet")
     )
     @unpack
     def test_get_path_with_file_extension(self, base, expected):
 
-        storage = AzureStorage("account", "container", "", None, None)
+        storage = DbfsStorage("", None, None)
 
         self.assertEqual(
             storage.get_path_with_file_extension(base), expected

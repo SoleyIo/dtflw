@@ -11,13 +11,13 @@ class InputTableTestCase(unittest.TestCase):
 
         input_name = "foo"
         input_file_name = f"{input_name}.parquet"
-        input_file_path = f"wasbs://container@account.blob.core.windows.net/{input_file_name}"
+        input_file_path = f"mock:/{input_file_name}"
 
         dbutils_mock = utils.mock_dbutils(
             fs_ls_raises_error=False,
             ls_return=[(input_file_name, input_file_path)]
         )
-        storage = utils.StorageMock("account", "container", "", None, dbutils_mock)
+        storage = utils.StorageMock("", None, dbutils_mock)
 
         i = InputTable(
             name=input_name,
@@ -42,7 +42,7 @@ class InputTableTestCase(unittest.TestCase):
     def test_validate_fails_file_does_not_exist(self):
 
         dbutils_mock = utils.mock_dbutils(fs_ls_raises_error=True)
-        storage = utils.StorageMock("account", "container", "", None, dbutils_mock)
+        storage = utils.StorageMock("", None, dbutils_mock)
 
         i = InputTable(
             name="foo",

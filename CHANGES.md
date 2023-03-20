@@ -1,6 +1,10 @@
 # Changes
 _All notable changes to the codebase are documented in this file._
 
+## [0.6.0] - 12.03.2023
+- Added `dtflw.storage.DbfsStorage`.
+- Added a demo project. See `demos/dtflw_intro`.
+
 ## [0.5.1] - 24.02.2023
 - Prepared the package for PyPi.
 

@@ -62,7 +62,7 @@ class FileStorageBase(ABC):
         self.__root_dir = root_dir
 
     @property
-    def root_dir(self):
+    def root_dir(self) -> str:
         """
         Root directory in the storage.
         """
@@ -70,7 +70,7 @@ class FileStorageBase(ABC):
 
     @property
     @abstractmethod
-    def base_path(self):
+    def base_path(self) -> str:
         """
         Returns the base path.
         """
@@ -95,6 +95,10 @@ class FileStorageBase(ABC):
         lister: lambda str -> list[(name:str, path:str)]
             Returns a list of (name:str, path:str) for a given path.
             Keep it None. It is used in unit test.
+
+        Returns
+        -------
+        list[str]: a list of matches.
         """
         if path_pattern is None:
             raise ValueError("'path_pattern' cannot be None.")
@@ -124,7 +128,7 @@ class FileStorageBase(ABC):
                     else:
                         collect_matches(info.path, parts[1:], matches)
 
-        parts = path_pattern[len(self.base_path) + 1:].split("/")
+        parts = path_pattern[len(self.base_path):].split("/")
 
         matches = []
         collect_matches(self.base_path, parts, matches)
@@ -146,7 +150,7 @@ class FileStorageBase(ABC):
         rel_path : str
             Relative file path.
         """
-        return f"{self.base_path}/{rel_path}"
+        return f"{self.base_path}{'' if self.base_path.endswith('/') else '/'}{rel_path}"
 
     def exists(self, path: str) -> bool:
         """
@@ -158,7 +162,7 @@ class FileStorageBase(ABC):
 
         return file_exists(self.get_abs_path(path), self.__dbutils)
 
-    def get_path_with_file_extension(self, file_path):
+    def get_path_with_file_extension(self, file_path) -> str:
         """
         Returns a given file path with a file extension.
 
@@ -167,7 +171,7 @@ class FileStorageBase(ABC):
         """
         return f"{file_path}.parquet"
 
-    def get_path_in_root_dir(self, rel_path):
+    def get_path_in_root_dir(self, rel_path) -> str:
         """
         Returns a path relative to the base path with the root directory preceding.
         """
