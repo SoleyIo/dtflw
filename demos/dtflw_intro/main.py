@@ -87,7 +87,7 @@ from dtflw.databricks import get_current_username
 
 display(
   dbutils.fs.ls(
-    storage.get_abs_path(storage.get_path_in_root_dir("demo_01/ingest_data"))
+    storage.get_abs_path(storage.get_path_in_root_dir("dtflw_intro/ingest_data"))
   )
 )
 
