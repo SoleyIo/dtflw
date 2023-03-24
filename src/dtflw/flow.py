@@ -52,11 +52,13 @@ class Flow:
 
         # Attach plugin actions to a notebook.
         for plugin in self.__nb_plugins.values():
+            
+            p = partial(plugin.act, new_nb, self)
             setattr(
                 new_nb,
                 plugin.action_name,
                 types.MethodType(
-                    partial(plugin.act, new_nb, self),
+                    partial(plugin.act, new_nb),
                     new_nb
                 ))
 
