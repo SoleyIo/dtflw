@@ -3,7 +3,7 @@ from typing import Union
 from dtflw.flow_context import FlowContext
 from dtflw.lazy_notebook import LazyNotebook
 from dtflw.plugin import FlowPluginBase, NotebookPluginBase
-
+from functools import partial
 
 class Flow:
     """
@@ -56,8 +56,7 @@ class Flow:
                 new_nb,
                 plugin.action_name,
                 types.MethodType(
-                    lambda notebook, *args, **kwargs:
-                        plugin.act(notebook, self, *args, **kwargs),
+                    partial(plugin.act, new_nb, self),
                     new_nb
                 ))
 
