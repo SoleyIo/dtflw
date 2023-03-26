@@ -32,6 +32,18 @@ class TestNotebookPlugin(NotebookPluginBase):
         """
         return notebook.get_args()[arg_name]
 
+class TestNotebookPlugin2(NotebookPluginBase):
+
+    @property
+    def action_name(self):
+        return "get_args_count"
+
+    def act(self, notebook: LazyNotebook, flow: Flow, arg_name: str):
+        """
+        Returns arg name.
+        """
+        return len(notebook.get_args())
+
 
 class FlowTestCase(unittest.TestCase):
 
@@ -108,3 +120,33 @@ class FlowTestCase(unittest.TestCase):
         # Assert
         self.assertEqual(nb.rel_path, "project/nb")
         self.assertTrue(hasattr(nb, nb_plg.action_name))
+
+    def test_insall_two_notebook_plugins(self):
+        # Arrange
+        nb_plg1 = TestNotebookPlugin()
+        nb_plg2 = TestNotebookPlugin2()
+        ctx = FlowContext(None, None, None, DefaultLogger())
+        flow = Flow(ctx)
+
+        flow.install(nb_plg1)
+        flow.install(nb_plg2)
+
+        # Act
+        expected1 = "foo"
+        expected2 = 1
+
+        actual1 = (
+            flow.notebook("import_data")
+                .args({"a": expected1})
+                .get_arg_value("a")
+        )
+
+        actual2 = (
+            flow.notebook("import_data")
+                .args({"a": expected2})
+                .get_args_count("a")
+        )
+
+        # Assert
+        self.assertEqual(expected1, actual1)
+        self.assertEqual(expected2, actual2)

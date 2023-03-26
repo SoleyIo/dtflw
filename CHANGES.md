@@ -1,6 +1,9 @@
 # Changes
 _All notable changes to the codebase are documented in this file._
 
+## [0.6.1] - 25.03.2023
+- Fixed bug with multiple NotebookPlugins installed.
+
 ## [0.6.0] - 12.03.2023
 - Added `dtflw.storage.DbfsStorage`.
 - Added a demo project. See `demos/dtflw_intro`.
