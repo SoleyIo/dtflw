@@ -1,6 +1,9 @@
 # Changes
 _All notable changes to the codebase are documented in this file._
 
+## [0.6.2] - 29.03.2023
+- Add extras_require section in `setup.py` for the extra packages.
+
 ## [0.6.1] - 25.03.2023
 - Fixed bug with multiple NotebookPlugins installed.
 
