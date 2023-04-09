@@ -1,6 +1,9 @@
 # Changes
 _All notable changes to the codebase are documented in this file._
 
+## [0.6.2] - 09.04.2023
+- Fixed bug with defining params for act method of the notebook plugin.
+
 ## [0.6.1] - 25.03.2023
 - Fixed bug with multiple NotebookPlugins installed.
 
