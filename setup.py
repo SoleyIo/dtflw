@@ -37,9 +37,7 @@ setup(
     ],
 
     extras_require = {
-        "test": [
-            "databricks-connect"
-        ]
+        "local": ["pyspark"]
     },
 
     project_urls={
