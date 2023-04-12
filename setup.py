@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="dtflw",
-    version="0.6.1",
+    version="0.6.2",
 
     description="dtflw is a Python framework for building modular data pipelines based on Databricks dbutils.notebook API.",
     long_description="See [the home page](https://github.com/SoleyIo/dtflw/blob/main/README.md) of the project for details.",
@@ -33,9 +33,12 @@ setup(
 
     install_requires=[
         "ddt>=1.5.0",
-        "databricks-connect",
         "setuptools"
     ],
+
+    extras_require = {
+        "local": ["pyspark"]
+    },
 
     project_urls={
         "Bug Reports": "https://github.com/SoleyIo/dtflw/issues",
