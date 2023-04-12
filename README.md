@@ -142,7 +142,7 @@ https://account.blob.core.windows.net/container/
 `dtflw` is available on [PyPi](https://pypi.org/project/dtflw/).
 See [how to get it on Databricks](https://docs.databricks.com/libraries/index.html#libraries). 
 
-To use `dtflw` on the local environment you need to have py spark installed. You can either install it manually
+To use `dtflw` on the local environment you need to have `pyspark` installed. You can either install it manually
 or you can run `pip install dtflw[local]` to install `pyspark` as an extra dependency.
 
 ## Changes
