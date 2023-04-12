@@ -17,6 +17,8 @@ class TestFlowPlugin(FlowPluginBase):
         """
         Greets.
         """
+        assert isinstance(flow, Flow)
+
         return f"Hello: {name}"
 
 
@@ -30,6 +32,9 @@ class TestNotebookPlugin(NotebookPluginBase):
         """
         Returns arg name.
         """
+        assert isinstance(notebook, LazyNotebook)
+        assert isinstance(flow, Flow)
+
         return notebook.get_args()[arg_name]
 
 
@@ -43,6 +48,9 @@ class TestNotebookPlugin2(NotebookPluginBase):
         """
         Returns number of arguments of the notebook.
         """
+        assert isinstance(notebook, LazyNotebook)
+        assert isinstance(flow, Flow)
+
         return len(notebook.get_args())
 
 
@@ -56,6 +64,9 @@ class TestNotebookPluginFlowCtxTablesCount(NotebookPluginBase):
         """
         Returns count of tables in flow.ctx.tables_repo.
         """
+        assert isinstance(notebook, LazyNotebook)
+        assert isinstance(flow, Flow)
+
         return self.plugin_len_method(flow.ctx.tables_repo.tables)
 
     def plugin_len_method(self, lst: list):
