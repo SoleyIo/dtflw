@@ -58,8 +58,8 @@ class TestNotebookPluginFlowCtxTablesCount(NotebookPluginBase):
         """
         return self.plugin_len_method(flow.ctx.tables_repo.tables)
 
-    def plugin_len_method(self, some_string: str):
-        return len(some_string)
+    def plugin_len_method(self, lst: list):
+        return len(lst)
 
 
 class FlowTestCase(unittest.TestCase):
