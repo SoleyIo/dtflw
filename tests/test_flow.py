@@ -17,6 +17,8 @@ class TestFlowPlugin(FlowPluginBase):
         """
         Greets.
         """
+        assert isinstance(flow, Flow)
+
         return f"Hello: {name}"
 
 
@@ -30,7 +32,11 @@ class TestNotebookPlugin(NotebookPluginBase):
         """
         Returns arg name.
         """
+        assert isinstance(notebook, LazyNotebook)
+        assert isinstance(flow, Flow)
+
         return notebook.get_args()[arg_name]
+
 
 class TestNotebookPlugin2(NotebookPluginBase):
 
@@ -38,11 +44,33 @@ class TestNotebookPlugin2(NotebookPluginBase):
     def action_name(self):
         return "get_args_count"
 
-    def act(self, notebook: LazyNotebook, flow: Flow, arg_name: str):
+    def act(self, notebook: LazyNotebook, flow: Flow):
         """
-        Returns arg name.
+        Returns number of arguments of the notebook.
         """
+        assert isinstance(notebook, LazyNotebook)
+        assert isinstance(flow, Flow)
+
         return len(notebook.get_args())
+
+
+class TestNotebookPluginFlowCtxTablesCount(NotebookPluginBase):
+
+    @property
+    def action_name(self):
+        return "get_tables_count"
+
+    def act(self, notebook: LazyNotebook, flow: Flow):
+        """
+        Returns count of tables in flow.ctx.tables_repo.
+        """
+        assert isinstance(notebook, LazyNotebook)
+        assert isinstance(flow, Flow)
+
+        return self.plugin_len_method(flow.ctx.tables_repo.tables)
+
+    def plugin_len_method(self, lst: list):
+        return len(lst)
 
 
 class FlowTestCase(unittest.TestCase):
@@ -133,7 +161,7 @@ class FlowTestCase(unittest.TestCase):
 
         # Act
         expected1 = "foo"
-        expected2 = 1
+        expected2 = 2
 
         actual1 = (
             flow.notebook("import_data")
@@ -143,10 +171,27 @@ class FlowTestCase(unittest.TestCase):
 
         actual2 = (
             flow.notebook("import_data")
-                .args({"a": expected2})
-                .get_args_count("a")
+                .args({"a": "123", "b": "321"})
+                .get_args_count()
         )
 
         # Assert
         self.assertEqual(expected1, actual1)
         self.assertEqual(expected2, actual2)
+
+    def test_insall_notebook_plugins_with_use_of_flow_param(self):
+        # Arrange
+        nb_plg = TestNotebookPluginFlowCtxTablesCount()
+        ctx = FlowContext(None, None, None, DefaultLogger())
+        flow = Flow(ctx)
+
+        flow.install(nb_plg)
+
+        # Act
+        actual = (
+            flow.notebook("import_data")
+                .get_tables_count()
+        )
+
+        # Assert
+        self.assertEqual(0, actual)
