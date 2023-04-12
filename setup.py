@@ -33,9 +33,12 @@ setup(
 
     install_requires=[
         "ddt>=1.5.0",
-        "databricks-connect",
         "setuptools"
     ],
+
+    extras_require = {
+        "local": ["pyspark"]
+    },
 
     project_urls={
         "Bug Reports": "https://github.com/SoleyIo/dtflw/issues",
