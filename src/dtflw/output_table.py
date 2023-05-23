@@ -41,10 +41,11 @@ class OutputTable():
         if self.needs_eval():
             raise Exception("Expected output not found.")
 
-        df = self.__ctx.storage.read_table(self.abs_file_path)
+        if self.__expected_columns:
+            df = self.__ctx.storage.read_table(self.abs_file_path)
 
-        A.assert_schema_compatible(
-            df.dtypes,
-            self.__expected_columns or [],
-            strict
-        )
+            A.assert_schema_compatible(
+                df.dtypes,
+                self.__expected_columns,
+                strict
+            )
