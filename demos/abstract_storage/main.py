@@ -21,8 +21,8 @@ flow.ctx.logger.verbosity = "verbose"
 
 (
   flow.notebook("ingest_data")
-    .input("Orders", file_path = storage.get_abs_path("FileStore/tables/dtflw_intro/orders.csv"))
-    .input("OrderDetails", storage.get_abs_path("FileStore/tables/dtflw_intro/order_details.csv"))
+    .input("Orders", file_path = storage.get_abs_path("FileStore/tables/dtflw_data/orders.csv"))
+    .input("OrderDetails", storage.get_abs_path("FileStore/tables/dtflw_data/order_details.csv"))
     .output("Orders", cols=[
       ('orderID', 'string'),
       ('customerID', 'string'),
