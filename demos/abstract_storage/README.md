@@ -1,5 +1,5 @@
-# Notebooks abstracted from a specific storage details
-This project demonstrates how to remove technical details of reading and writing tables from notebooks.
+# Abstract storage in notebooks
+This project demonstrates how to remove technical details of tables reading and writing from notebooks.
 
 ## Requirements
 1. Shared Spark session between notebooks. To enable it, add to Spark config: `spark.databricks.session.share true`.
