@@ -97,7 +97,7 @@ class SparkSessionMock:
 
         def get(self, key):
             if key not in self._conf:
-                raise Exception("java.util.NoSuchElementException")
+                raise Exception("NoSuchElementException")
             return self._conf[key]
 
         def set(self, key, value):

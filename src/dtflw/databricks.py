@@ -79,7 +79,7 @@ def try_get_context_tag(key, defaut=None):
         dbutils = get_dbutils()
         return dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags().apply(key)
     except Exception as e:
-        if "java.util.NoSuchElementException: key not found" in str(e):
+        if "NoSuchElementException" in str(e):
             return defaut
         else:
             raise
@@ -114,6 +114,6 @@ def runtime_config_has(key: str):
     try:
         get_runtime_config_property(key)
     except Exception as e:
-        if "java.util.NoSuchElementException" in str(e):
+        if "NoSuchElementException" in str(e):
             return False
     return True

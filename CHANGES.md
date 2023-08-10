@@ -1,6 +1,9 @@
 # Changes
 _All notable changes to the codebase are documented in this file._
 
+## [0.6.5] - 08.10.2023
+- Fixed: `NoSuchElementException` java exception may belong not only to `java.util` namespace.
+
 ## [0.6.4] - 09.04.2023
 - Improve validation, skip reading output table if table expected_columns are not set.
 
