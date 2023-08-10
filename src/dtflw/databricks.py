@@ -78,11 +78,8 @@ def try_get_context_tag(key, defaut=None):
     try:
         dbutils = get_dbutils()
         return dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags().apply(key)
-    except Exception as e:
-        if "NoSuchElementException" in str(e):
-            return defaut
-        else:
-            raise
+    except:
+        return defaut
 
 
 def is_job_interactive() -> bool:
@@ -113,7 +110,7 @@ def runtime_config_has(key: str):
     """
     try:
         get_runtime_config_property(key)
-    except Exception as e:
-        if "NoSuchElementException" in str(e):
-            return False
+    except:
+        return False
+
     return True
