@@ -70,7 +70,7 @@ def get_path_relative_to_project_dir(rel_path: str) -> str:
     return "/".join(get_notebook_abs_path(rel_path).split("/")[3:])
 
 
-def try_get_context_tag(key, defaut=None):
+def try_get_context_tag(key, default=None):
     """
     Tries to get a value from `dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags()`
     by a given key. Returns default if not found.
@@ -79,7 +79,7 @@ def try_get_context_tag(key, defaut=None):
         dbutils = get_dbutils()
         return dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags().apply(key)
     except:
-        return defaut
+        return default
 
 
 def is_job_interactive() -> bool:
