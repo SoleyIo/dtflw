@@ -10,7 +10,7 @@
 import dataflow
 
 flow = dataflow.get_flow()
-# storage instance is also availbel at flow.ctx.storage
+# storage instance is also available at flow.ctx.storage
 storage = dataflow.get_storage()
 
 # COMMAND ----------
