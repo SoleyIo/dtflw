@@ -70,7 +70,7 @@ def get_path_relative_to_project_dir(rel_path: str) -> str:
     return "/".join(get_notebook_abs_path(rel_path).split("/")[3:])
 
 
-def try_get_context_tag(key, defaut=None):
+def try_get_context_tag(key, default=None):
     """
     Tries to get a value from `dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags()`
     by a given key. Returns default if not found.
@@ -78,11 +78,8 @@ def try_get_context_tag(key, defaut=None):
     try:
         dbutils = get_dbutils()
         return dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags().apply(key)
-    except Exception as e:
-        if "java.util.NoSuchElementException: key not found" in str(e):
-            return defaut
-        else:
-            raise
+    except:
+        return default
 
 
 def is_job_interactive() -> bool:
@@ -113,7 +110,7 @@ def runtime_config_has(key: str):
     """
     try:
         get_runtime_config_property(key)
-    except Exception as e:
-        if "java.util.NoSuchElementException" in str(e):
-            return False
+    except:
+        return False
+
     return True
