@@ -185,3 +185,10 @@ class FileStorageBase(ABC):
         Override this method in a subclass to change to a different file format.
         """
         return self.__spark.read.parquet(path)
+    
+    def write_table(self, df: DataFrame, path: str) -> None:
+        """
+        Write a DataFrame `df` as a parquet to a given `path`. 
+        """
+        df.write.mode("overwrite").parquet(path)
+
