@@ -23,7 +23,7 @@ storage = dataflow.get_storage()
 (
   flow.notebook("product_revenue")
     .args({
-      "year": args["year"]
+      "year": args["year"].value
     })
     .input("SalesOrderItems", file_path=inputs["SalesOrderItems"].value)
     .output("ProductRevenueStats", file_path=outputs["ProductRevenueStats"].value)
@@ -35,7 +35,7 @@ storage = dataflow.get_storage()
 (
   flow.notebook("shipping_delays")
     .args({
-      "year": args["year"]
+      "year": args["year"].value
     })
     .input("SalesOrderItems", file_path=inputs["SalesOrderItems"].value)
     .output("ShippingDelays", file_path=outputs["ShippingDelays"].value)
