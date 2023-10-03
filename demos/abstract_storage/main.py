@@ -16,6 +16,7 @@ storage = dataflow.get_storage()
 # COMMAND ----------
 
 flow.ctx.logger.verbosity = "verbose"
+is_lazy = True
 
 # COMMAND ----------
 
