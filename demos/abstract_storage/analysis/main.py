@@ -13,6 +13,13 @@ is_lazy = True
 
 # COMMAND ----------
 
+import dataflow
+
+flow = dataflow.get_flow()
+storage = dataflow.get_storage()
+
+# COMMAND ----------
+
 (
   flow.notebook("product_revenue")
     .args({
