@@ -61,4 +61,4 @@ class InputTable():
             No used here but added for compatiblity with output_table.validate.
         """
         if self.needs_eval():
-            raise Exception(f"Required input not found.")
+            raise Exception("Required input not found.")
