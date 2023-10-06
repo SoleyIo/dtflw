@@ -50,7 +50,7 @@ class LazyNotebook:
         self.__timeout = timeout
         return self
 
-    def input(self, name: str, file_path: str = None, source_table: str = None) -> LazyNotebook:
+    def input(self, name: str, file_path: str = None, source_table: str = None, is_optional: bool = False) -> LazyNotebook:
         """
         Registers an input table which is required by the notebook to run.
 
@@ -66,6 +66,9 @@ class LazyNotebook:
         source_table: str
             Name of the source table to pass an an input. 
             If 'source_table' is not given then 'name' is used.
+        is_optional: bool
+            Indicator if the input table is optional or not. 
+            If is_optional == True then input table is not necessarily be exist in the file_path.
         """
         if name is None or len(name) == 0:
             raise ValueError("Input's name cannot be empty.")
@@ -82,14 +85,26 @@ class LazyNotebook:
                 self.rel_path
             )
 
-        elif not self.ctx.storage.is_abs_path(input_file_path):
+        elif not self.ctx.storage.is_abs_path(input_file_path) and not input_file_path=="Input file is optional and does not exist!":
             # Bind the input to a given specific file
+            
             input_file_path = self.ctx.storage.get_abs_path(input_file_path)
 
-        self.__inputs[name] = InputTable(
+        input_table = InputTable(
             name,
             input_file_path,
-            self.ctx)
+            self.ctx,
+            is_optional)
+        
+        if is_optional and input_table.path_is_not_valid():
+            input_table = InputTable(
+                name,
+                "Input file is optional and does not exist!",
+                self.ctx,
+                is_optional)
+
+        self.__inputs[name] = input_table
+        
         return self
 
     def get_inputs(self):

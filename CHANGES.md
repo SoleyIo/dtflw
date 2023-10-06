@@ -1,6 +1,10 @@
 # Changes
 _All notable changes to the codebase are documented in this file._
 
+## [0.6.7] - 26.09.2024
+- Added `is_optional` parameter for `LazyNotebook.inputs` and `input_table` in order to enable `input_table`
+to be optional and not throwing an expception with missing input table in the specified `file_path`
+
 ## [0.6.6] - 17.08.2023
 - Added `dtflw.storage.fs.FileStorageBase.write_table` method.
 - Added a demo project showing how to abstract from a specific storage in notebooks.
