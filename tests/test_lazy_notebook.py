@@ -81,7 +81,7 @@ class LazyNotebookTestCase(unittest.TestCase):
         self.assertEqual(len(inputs), 1)
         self.assertIn("foo", inputs)
         self.assertEqual(inputs["foo"].name, "foo")
-        self.assertEqual(inputs["foo"].abs_file_path, "Input file is optional and does not exist!")
+        self.assertEqual(inputs["foo"].abs_file_path, "")
         self.assertEqual(inputs["foo"].is_optional, True)
 
     def test_input_name_none_fails(self):
