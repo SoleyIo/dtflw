@@ -44,10 +44,7 @@ class InputTable():
         """
         ....
         """
-        if self.abs_file_path == "Input file is optional and does not exist!":
-            return False
-        else:
-            return not self.abs_file_path or len(self.__ctx.storage.list(self.abs_file_path)) == 0
+        return not self.abs_file_path or len(self.__ctx.storage.list(self.abs_file_path)) == 0
 
     def validate(self, strict: bool = False):
         """

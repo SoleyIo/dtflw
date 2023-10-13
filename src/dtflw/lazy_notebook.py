@@ -85,9 +85,8 @@ class LazyNotebook:
                 self.rel_path
             )
 
-        elif not self.ctx.storage.is_abs_path(input_file_path) and not input_file_path=="Input file is optional and does not exist!":
+        elif not self.ctx.storage.is_abs_path(input_file_path):
             # Bind the input to a given specific file
-            
             input_file_path = self.ctx.storage.get_abs_path(input_file_path)
 
         input_table = InputTable(
@@ -99,7 +98,7 @@ class LazyNotebook:
         if is_optional and input_table.path_is_not_valid():
             input_table = InputTable(
                 name,
-                "Input file is optional and does not exist!",
+                "",
                 self.ctx,
                 is_optional)
 
