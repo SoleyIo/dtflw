@@ -70,7 +70,7 @@ class LazyNotebookTestCase(unittest.TestCase):
         # Act
         nb = LazyNotebook("nb", self._ctx).input(
             name="foo",
-            file_path="Input file is optional and does not exist!",
+            file_path="",
             is_optional=True
         )
 
