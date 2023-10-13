@@ -85,7 +85,7 @@ class LazyNotebook:
                 self.rel_path
             )
 
-        elif not self.ctx.storage.is_abs_path(input_file_path):
+        elif not self.ctx.storage.is_abs_path(input_file_path) and not input_file_path=="":
             # Bind the input to a given specific file
             input_file_path = self.ctx.storage.get_abs_path(input_file_path)
 
