@@ -68,7 +68,7 @@ class LazyNotebook:
             If 'source_table' is not given then 'name' is used.
         is_optional: bool
             Indicator if the input table is optional or not. 
-            If is_optional == True then input table is not necessarily be exist in the file_path.
+            If is_optional == True, then the input table may not necessarily exist in the specified file_path.
         """
         if name is None or len(name) == 0:
             raise ValueError("Input's name cannot be empty.")
@@ -85,22 +85,18 @@ class LazyNotebook:
                 self.rel_path
             )
 
-        elif not self.ctx.storage.is_abs_path(input_file_path) and not input_file_path=="":
+        elif not self.ctx.storage.is_abs_path(input_file_path) and input_file_path != "":
             # Bind the input to a given specific file
             input_file_path = self.ctx.storage.get_abs_path(input_file_path)
+
+        if is_optional and (not input_file_path or len(self.ctx.storage.list(input_file_path)) == 0):
+            input_file_path = ""
 
         input_table = InputTable(
             name,
             input_file_path,
             self.ctx,
             is_optional)
-        
-        if is_optional and input_table.path_is_not_valid():
-            input_table = InputTable(
-                name,
-                "",
-                self.ctx,
-                is_optional)
 
         self.__inputs[name] = input_table
         

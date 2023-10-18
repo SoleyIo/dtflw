@@ -32,19 +32,12 @@ class InputTable():
 
     def needs_eval(self) -> bool:
         """
-        Returns False, if the file path is sepcifically indicated as "Input file is optional and does not exist!", 
-        Else True if the table needs to be evaluated, and False otherwise.
+        Returns True if the table needs to be evaluated, and False otherwise.
         """
         if self.is_optional:
             return False
         else:
-            return self.path_is_not_valid()
-        
-    def path_is_not_valid(self) -> bool:
-        """
-        ....
-        """
-        return not self.abs_file_path or len(self.__ctx.storage.list(self.abs_file_path)) == 0
+            return not self.abs_file_path or len(self.__ctx.storage.list(self.abs_file_path)) == 0
 
     def validate(self, strict: bool = False):
         """

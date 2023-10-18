@@ -2,8 +2,7 @@
 _All notable changes to the codebase are documented in this file._
 
 ## [0.6.7] - 26.09.2024
-- Added `is_optional` parameter for `LazyNotebook.inputs` and `input_table` in order to enable `input_table`
-to be optional and not throwing an expception with missing input table in the specified `file_path`
+- Added `is_optional` parameter to the `LazyNotebook.inputs` and input_table. This enhancement allows to make the `input_table` optional, preventing it from raising an exception when the specified `file_path` is missing.
 
 ## [0.6.6] - 17.08.2023
 - Added `dtflw.storage.fs.FileStorageBase.write_table` method.
