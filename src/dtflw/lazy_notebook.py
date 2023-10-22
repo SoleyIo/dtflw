@@ -1,12 +1,14 @@
 from __future__ import annotations
-from dtflw.pipeline import NotebookRun
-import dtflw.databricks as db
+
 import typing
+
+import dtflw.arguments as a
+import dtflw.com as com
+import dtflw.databricks as db
 from dtflw.flow_context import FlowContext
 from dtflw.input_table import InputTable
 from dtflw.output_table import OutputTable
-import dtflw.arguments as a
-import dtflw.com as com
+from dtflw.pipeline import NotebookRun
 
 
 class LazyNotebook:
@@ -70,37 +72,35 @@ class LazyNotebook:
             Indicator if the input table is optional or not. 
             If is_optional == True, then the input table may not necessarily exist in the specified file_path.
         """
-        if name is None or len(name) == 0:
+        if not name:
             raise ValueError("Input's name cannot be empty.")
 
-        input_file_path = file_path
-        if input_file_path is None:
-            # Resolve the input's file either by given 'source' or its `name`
-            source_table_name = name
-            if source_table is not None and len(source_table) > 0:
-                source_table_name = source_table
-
-            input_file_path = self.ctx.resolve_table(
-                source_table_name,
-                self.rel_path
-            )
-
-        elif not self.ctx.storage.is_abs_path(input_file_path) and input_file_path != "":
-            # Bind the input to a given specific file
-            input_file_path = self.ctx.storage.get_abs_path(input_file_path)
-
-        if is_optional and (not input_file_path or len(self.ctx.storage.list(input_file_path)) == 0):
-            input_file_path = ""
-
-        input_table = InputTable(
-            name,
-            input_file_path,
-            self.ctx,
-            is_optional)
-
-        self.__inputs[name] = input_table
+        if not file_path:
+            file_path = self._resolve_file_path(name, source_table)
         
+        elif not self.ctx.storage.is_abs_path(file_path):
+            file_path = self.ctx.storage.get_abs_path(file_path)
+
+        if is_optional:
+            file_path = self._handle_optional_input(file_path)
+
+        input_table = InputTable(name, file_path, self.ctx, is_optional)
+        self.__inputs[name] = input_table
+
         return self
+
+    def _resolve_file_path(self, name: str, source_table: str) -> str:
+        """
+            Resolve the file path based on source table or name.
+        """
+        source_table_name = source_table if source_table else name
+        return self.ctx.resolve_table(source_table_name, self.rel_path)
+
+    def _handle_optional_input(self, file_path: str) -> str:
+        """Return an empty string if the input is optional and doesn't exist."""
+        if not file_path or len(self.ctx.storage.list(file_path)) == 0:
+            return ""
+        return file_path
 
     def get_inputs(self):
         """
