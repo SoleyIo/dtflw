@@ -65,6 +65,25 @@ class LazyNotebookTestCase(unittest.TestCase):
         self.assertEqual(inputs["foo"].name, "foo")
         self.assertEqual(inputs["foo"].abs_file_path, expected_input_path)
 
+    def test_input_optional(self):
+
+        # Act
+        nb = LazyNotebook("nb", self._ctx).input(
+            name="foo",
+            file_path="",
+            is_optional=True
+        )
+
+        # Assert
+
+        inputs = nb.get_inputs()
+
+        self.assertEqual(len(inputs), 1)
+        self.assertIn("foo", inputs)
+        self.assertEqual(inputs["foo"].name, "foo")
+        self.assertEqual(inputs["foo"].abs_file_path, "")
+        self.assertEqual(inputs["foo"].is_optional, True)
+
     def test_input_name_none_fails(self):
 
         with self.assertRaises(ValueError):

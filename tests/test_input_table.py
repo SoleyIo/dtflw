@@ -57,3 +57,21 @@ class InputTableTestCase(unittest.TestCase):
 
         with self.assertRaises(Exception):
             i.validate()
+
+    def test_validate_is_optional_does_not_fail_file_does_not_exist(self):
+
+        dbutils_mock = utils.mock_dbutils(fs_ls_raises_error=True)
+        storage = utils.StorageMock("", None, dbutils_mock)
+
+        i = InputTable(
+            name="foo",
+            abs_file_path=storage.get_abs_path("foo.parquet"),
+            ctx=FlowContext(
+                storage=storage,
+                spark=None,
+                dbutils=dbutils_mock,
+                logger=DefaultLogger()
+            ),
+            is_optional=True
+        )
+        i.validate()
