@@ -1,12 +1,11 @@
 from __future__ import annotations
 from pyspark.sql.dataframe import DataFrame
 from pyspark.sql.session import SparkSession
-from dtflw.databricks import get_dbutils
 import fnmatch
 from abc import ABC, abstractmethod
 
 
-def file_exists(abs_path: str, dbutils=None) -> bool:
+def file_exists(abs_path: str, dbutils) -> bool:
     """
     Returns True if a file by the given absolute path exists, and False otherwise.
     Works for Azure Storage container and DBFS.
@@ -16,7 +15,7 @@ def file_exists(abs_path: str, dbutils=None) -> bool:
     abs_path : str
         Absolute file path.
 
-    dbutils : DBUtils
+    dbutils : RemoteDbUtils
 
     Returns
     -------
@@ -24,9 +23,6 @@ def file_exists(abs_path: str, dbutils=None) -> bool:
     """
     if abs_path is None or len(abs_path) == 0:
         raise ValueError("'abs_path' cannot be None neither an empty string.")
-
-    if dbutils is None:
-        dbutils = get_dbutils()
 
     try:
         dbutils.fs.ls(abs_path)
