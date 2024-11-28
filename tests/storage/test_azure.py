@@ -119,7 +119,7 @@ class AzureStorageTestCase(unittest.TestCase):
 
         storage = AzureStorage(acc_name, con_name, root_dir, None, None)
 
-        expected_path = f"wasbs://{con_name}@{acc_name}.blob.core.windows.net/{rel_path}"
+        expected_path = f"abfss://{con_name}@{acc_name}.dfs.core.windows.net/{rel_path}"
 
         # Act
         actual_path = storage.get_abs_path(rel_path)
@@ -130,8 +130,8 @@ class AzureStorageTestCase(unittest.TestCase):
     @data(
         ("file.txt", True),
         ("file.txt", False),
-        ("wasbs://container@account.blob.core.windows.net/file.txt", True),
-        ("wasbs://container@account.blob.core.windows.net/file.txt", False)
+        ("abfss://container@account.dfs.core.windows.net/file.txt", True),
+        ("abfss://container@account.dfs.core.windows.net/file.txt", False)
 
     )
     @unpack
@@ -146,9 +146,9 @@ class AzureStorageTestCase(unittest.TestCase):
 
     @data(
         ("", "", False),
-        ("wasbs://con@acc.blob.core.windows.net/", "root", True),
-        ("wasbs://con@acc.blob.core.windows.net/dir/file.txt", "root", True),
-        ("wasbs://con@acc.blob.core.windows.net/dir/file.txt", "", True),
+        ("abfss://con@acc.dfs.core.windows.net/", "root", True),
+        ("abfss://con@acc.dfs.core.windows.net/dir/file.txt", "root", True),
+        ("abfss://con@acc.dfs.core.windows.net/dir/file.txt", "", True),
         ("root/sub_root/", "root", False)
     )
     @unpack
@@ -180,14 +180,14 @@ class AzureStorageTestCase(unittest.TestCase):
 
         self.assertEqual(
             storage.base_path,
-            "wasbs://container@account.blob.core.windows.net/"
+            "abfss://container@account.dfs.core.windows.net/"
         )
 
     @data(
         ("file", "file.parquet"),
         ("root/file", "root/file.parquet"),
-        ("wasbs://container@account.blob.core.windows.net/foo/bar",
-         "wasbs://container@account.blob.core.windows.net/foo/bar.parquet")
+        ("abfss://container@account.dfs.core.windows.net/foo/bar",
+         "abfss://container@account.dfs.core.windows.net/foo/bar.parquet")
     )
     @unpack
     def test_get_path_with_file_extension(self, base, expected):

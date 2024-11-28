@@ -28,7 +28,7 @@ def file_exists(abs_path: str, dbutils) -> bool:
         dbutils.fs.ls(abs_path)
         return True
     except Exception as e:
-        if "java.io.FileNotFoundException" in str(e):
+        if any(err in str(e) for err in ["NotFound", "Not Found"]):
             return False
         else:
             raise
