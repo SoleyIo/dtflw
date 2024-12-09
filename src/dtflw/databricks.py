@@ -112,7 +112,7 @@ class DatabricksWorkspace:
         details = self.cluster_details(cluster_id=cluster_id)
         
         from databricks.sdk.service.compute import State
-        if details.state != State.RUNNING:
+        if details.state in [State.TERMINATED, State.UNKNOWN, State.ERROR]:
             return self._workspace_client.clusters.start_and_wait(cluster_id=cluster_id, timeout=timeout)
         else:
             return details
